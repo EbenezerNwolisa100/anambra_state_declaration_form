@@ -8,6 +8,7 @@ function indigenes() {
         surname: '',
         firstName: '',
         middleName: '',
+        email: '',
         dateOfBirth: '',
         gender: '',
         maritalStatus: '',
@@ -122,7 +123,7 @@ function indigenes() {
     
         // Validate required fields
         const requiredFields = [
-            'surname', 'firstName', 'dateOfBirth', 'gender', 'maritalStatus',
+            'surname', 'firstName', 'email', 'dateOfBirth', 'gender', 'maritalStatus',
             'countryOfResidence', 'employed', 'occupation', 'phoneNumber',
             'nextOfKin', 'nextOfKinPhoneNumber', 'validMeansOfIdentification',
             'validIdentificationNumber'
@@ -169,7 +170,8 @@ function indigenes() {
     return (
         <>
             <div className="container mt-5">
-            <h1 className='text-center mb-5'>Anambra State Declaration Form</h1>
+            <h1 className='text-center'>Anambra State Declaration Form</h1>
+            <p className='text-center mb-5'>(For Indigenes Only)</p>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <input
@@ -205,6 +207,19 @@ function indigenes() {
                         className="form-control"
                     />
                 </div>
+
+                <div className="mb-3">
+                    <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Email"
+                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                    />
+                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                </div>
+
 
                 <div className="mb-3">
                     <input
@@ -251,7 +266,7 @@ function indigenes() {
                         <div className="mb-3">
                             <input
                                 type="text"
-                                name="spouseName"
+                                name="spouseName" 
                                 value={formData.spouseName}
                                 onChange={handleChange}
                                 placeholder="Spouse Name"
