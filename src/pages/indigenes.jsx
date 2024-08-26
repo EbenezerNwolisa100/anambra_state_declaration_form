@@ -1,34 +1,35 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
-import axios from 'axios'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function indigenes() {
+const IndigenesForm = () => {
 
     const [formData, setFormData] = useState({
+        submission_type: 'indigene',
         surname: '',
-        firstName: '',
-        middleName: '',
+        first_name: '',
+        middle_name: '',
         email: '',
-        dateOfBirth: '',
+        date_of_birth: '',
         gender: '',
-        maritalStatus: '',
-        spouseName: '',
-        spousePhoneNumber: '',
-        countryOfResidence: '',
-        stateOfResidence: '',
-        lgaOfResidence: '',
-        lgaOfOrigin: '',
-        communityOfOrigin: '',
+        marital_status: '',
+        spouse_name: '',
+        spouse_phone_number: '',
+        country_of_residence: '',
+        state_of_residence: '',
+        lga_of_residence: '',
+        lga_of_origin: '',
+        community_of_origin: '',
         village: '',
+        tribe: '',
         kindred: '',
-        employed: '',
+        employment_status: '',
         occupation: '',
-        phoneNumber: '',
-        alternatePhoneNumber: '',
-        nextOfKin: '',
-        nextOfKinPhoneNumber: '',
-        validMeansOfIdentification: '',
-        validIdentificationNumber: '',
+        phone_number: '',
+        alternate_phone_number: '',
+        next_of_kin: '',
+        next_of_kin_phone_number: '',
+        valid_means_of_identification: '',
+        valid_identification_number: '',
     });
 
     const [errors, setErrors] = useState({});
@@ -64,7 +65,6 @@ function indigenes() {
         // Add other states and their LGAs here...
     };
 
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({
@@ -77,7 +77,7 @@ function indigenes() {
             [name]: ''
         }));
 
-        if (name === 'countryOfResidence') {
+        if (name === 'country_of_residence') {
             if (value === 'Nigeria') {
                 setStates(nigeriaStates);
             } else {
@@ -85,27 +85,35 @@ function indigenes() {
                 setLGAs([]);
                 setFormData(prevData => ({
                     ...prevData,
-                    stateOfResidence: '',
-                    lgaOfResidence: '',
-                    lgaOfOrigin: ''
+                    state_of_residence: '',
+                    lga_of_residence: '',
+                    lga_of_origin: ''
                 }));
             }
         }
 
-        if (name === 'stateOfResidence') {
+        if (name === 'state_of_residence') {
             const stateLGAs = lgasByState[value] || [];
             setLGAs(stateLGAs);
             setFormData(prevData => ({
                 ...prevData,
-                lgaOfResidence: '',
-                lgaOfOrigin: ''
+                lga_of_residence: '',
+                lga_of_origin: ''
             }));
         }
-        if (name === 'maritalStatus' && value !== 'married') {
+
+        if (name === 'marital_status' && value !== 'married') {
             setFormData(prevData => ({
                 ...prevData,
-                spouseName: '',
-                spousePhoneNumber: ''
+                spouse_name: '',
+                spouse_phone_number: ''
+            }));
+        }
+
+        if (name === 'employment_status' && value !== 'employed') {
+            setFormData(prevData => ({
+                ...prevData,
+                occupation: ''
             }));
         }
     };
@@ -113,391 +121,445 @@ function indigenes() {
     const validateForm = () => {
         let tempErrors = {};
         const today = new Date();
-        const birthDate = new Date(formData.dateOfBirth);
+        const birthDate = new Date(formData.date_of_birth);
         const age = today.getFullYear() - birthDate.getFullYear();
-    
+
         // Check age
         if (age < 18) {
-            tempErrors.dateOfBirth = "You should be 18 years and above to fill this form";
+            tempErrors.date_of_birth = "You should be 18 years and above to fill this form";
         }
-    
+
         // Validate required fields
         const requiredFields = [
-            'surname', 'firstName', 'email', 'dateOfBirth', 'gender', 'maritalStatus',
-            'countryOfResidence', 'employed', 'occupation', 'phoneNumber',
-            'nextOfKin', 'nextOfKinPhoneNumber', 'validMeansOfIdentification',
-            'validIdentificationNumber'
+            'surname', 'first_name', 'email', 'village', 'kindred', 'date_of_birth', 'gender', 'marital_status',
+            'country_of_residence', 'employment_status', 'phone_number',
+            'next_of_kin', 'next_of_kin_phone_number', 'valid_means_of_identification',
+            'valid_identification_number'
         ];
-    
+
         requiredFields.forEach(field => {
             if (!formData[field]) {
-                tempErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} is required`;
+                tempErrors[field] = `${field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())} is required`;
             }
         });
-    
+
         // Validate spouse fields if married
-        if (formData.maritalStatus === 'married') {
-            if (!formData.spouseName) tempErrors.spouseName = "Spouse name is required";
-            if (!formData.spousePhoneNumber) tempErrors.spousePhoneNumber = "Spouse phone number is required";
+        if (formData.marital_status === 'married') {
+            if (!formData.spouse_name) tempErrors.spouse_name = "Spouse name is required";
+            if (!formData.spouse_phone_number) tempErrors.spouse_phone_number = "Spouse phone number is required";
         }
-    
+
         // Validate Nigeria-specific fields
-        if (formData.countryOfResidence === 'Nigeria') {
-            const nigeriaFields = ['stateOfResidence', 'lgaOfResidence', 'lgaOfOrigin', 'communityOfOrigin'];
+        if (formData.country_of_residence === 'Nigeria') {
+            const nigeriaFields = ['state_of_residence', 'lga_of_residence', 'lga_of_origin', 'community_of_origin'];
             nigeriaFields.forEach(field => {
                 if (!formData[field]) {
-                    tempErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} is required`;
+                    tempErrors[field] = `${field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())} is required`;
                 }
             });
         }
-    
+
+        // Validate phone numbers
+        const phoneFields = ['phone_number', 'alternate_phone_number', 'next_of_kin_phone_number', 'spouse_phone_number'];
+        phoneFields.forEach(field => {
+            if (formData[field] && formData[field].length !== 11) {
+                tempErrors[field] = "Invalid Phone number";
+            }
+        });
+
+        // Validate occupation if employed
+        if (formData.employment_status === 'employed' && !formData.occupation) {
+            tempErrors.occupation = "Occupation is required";
+        }
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            tempErrors.email = "Invalid email address";
+        }
+
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validateForm();
         if (isValid) {
-            console.log(formData);
-            // Here you would typically send the data to your backend
+            try {
+                const response = await axios.post('http://localhost/user_data/submit_form.php', formData);
+                console.log(response.data);
+                if (response.data.status === "success") {
+                    alert("Form submitted successfully!");
+                } else {
+                    alert("Failed to submit form: " + response.data.message);
+                }
+            } catch (error) {
+                console.error("There was an error submitting the form!", error);
+                alert("There was an error submitting the form!");
+            }
         } else {
             console.log("Form has errors");
         }
     };
 
-
     return (
-        <>
-            <div className="container mt-5">
+        <div className="container mt-5">
             <h1 className='text-center'>Anambra State Declaration Form</h1>
             <p className='text-center mb-5'>(For Indigenes Only)</p>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} method='POST'>
                 <div className="mb-3">
+                    <label htmlFor="surname" className="form-label">Surname</label>
                     <input
                         type="text"
+                        className={`form-control ${errors.surname ? 'is-invalid' : ''}`}
+                        id="surname"
                         name="surname"
                         value={formData.surname}
                         onChange={handleChange}
-                        placeholder="Surname"
-                        className={`form-control ${errors.surname ? 'is-invalid' : ''}`}
                     />
-                    {errors.surname && <div className="invalid-feedback">{errors.surname}</div>}
+                    <div className="invalid-feedback">{errors.surname}</div>
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="first_name" className="form-label">First Name</label>
                     <input
                         type="text"
-                        name="firstName"
-                        value={formData.firstName}
+                        className={`form-control ${errors.first_name ? 'is-invalid' : ''}`}
+                        id="first_name"
+                        name="first_name"
+                        value={formData.first_name}
                         onChange={handleChange}
-                        placeholder="First Name"
-                        className={`form-control ${errors.firstName ? 'is-invalid' : ''}`}
                     />
-                    {errors.firstName && <div className="invalid-feedback">{errors.firstName}</div>}
+                    <div className="invalid-feedback">{errors.first_name}</div>
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="middle_name" className="form-label">Middle Name</label>
                     <input
                         type="text"
-                        name="middleName"
-                        value={formData.middleName}
-                        onChange={handleChange}
-                        placeholder="Middle Name"
                         className="form-control"
+                        id="middle_name"
+                        name="middle_name"
+                        value={formData.middle_name}
+                        onChange={handleChange}
                     />
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="email" className="form-label">Email</label>
                     <input
                         type="email"
+                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                        id="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="Email"
-                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                     />
-                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                    <div className="invalid-feedback">{errors.email}</div>
                 </div>
 
-
                 <div className="mb-3">
+                    <label htmlFor="date_of_birth" className="form-label">Date of Birth</label>
                     <input
                         type="date"
-                        name="dateOfBirth"
-                        value={formData.dateOfBirth}
+                        className={`form-control ${errors.date_of_birth ? 'is-invalid' : ''}`}
+                        id="date_of_birth"
+                        name="date_of_birth"
+                        value={formData.date_of_birth}
                         onChange={handleChange}
-                        className={`form-control ${errors.dateOfBirth ? 'is-invalid' : ''}`}
                     />
-                    {errors.dateOfBirth && <div className="invalid-feedback">{errors.dateOfBirth}</div>}
+                    <div className="invalid-feedback">{errors.date_of_birth}</div>
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="gender" className="form-label">Gender</label>
                     <select
+                        className={`form-select ${errors.gender ? 'is-invalid' : ''}`}
+                        id="gender"
                         name="gender"
                         value={formData.gender}
                         onChange={handleChange}
-                        className={`form-select ${errors.gender ? 'is-invalid' : ''}`}
                     >
-                        <option value="" disabled>Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
                     </select>
-                    {errors.gender && <div className="invalid-feedback">{errors.gender}</div>}
+                    <div className="invalid-feedback">{errors.gender}</div>
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="marital_status" className="form-label">Marital Status</label>
                     <select
-                        name="maritalStatus"
-                        value={formData.maritalStatus}
+                        className={`form-select ${errors.marital_status ? 'is-invalid' : ''}`}
+                        id="marital_status"
+                        name="marital_status"
+                        value={formData.marital_status}
                         onChange={handleChange}
-                        className={`form-select ${errors.maritalStatus ? 'is-invalid' : ''}`}
                     >
-                        <option value="" disabled>Select Marital Status</option>
+                        <option value="">Select Marital Status</option>
                         <option value="single">Single</option>
                         <option value="married">Married</option>
+                        <option value="divorced">Divorced</option>
+                        <option value="widowed">Widowed</option>
                     </select>
-                    {errors.maritalStatus && <div className="invalid-feedback">{errors.maritalStatus}</div>}
+                    <div className="invalid-feedback">{errors.marital_status}</div>
                 </div>
 
-                {formData.maritalStatus === 'married' && (
+                {formData.marital_status === 'married' && (
                     <>
                         <div className="mb-3">
+                            <label htmlFor="spouse_name" className="form-label">Spouse Name</label>
                             <input
                                 type="text"
-                                name="spouseName" 
-                                value={formData.spouseName}
+                                className={`form-control ${errors.spouse_name ? 'is-invalid' : ''}`}
+                                id="spouse_name"
+                                name="spouse_name"
+                                value={formData.spouse_name}
                                 onChange={handleChange}
-                                placeholder="Spouse Name"
-                                className={`form-control ${errors.spouseName ? 'is-invalid' : ''}`}
                             />
-                            {errors.spouseName && <div className="invalid-feedback">{errors.spouseName}</div>}
+                            <div className="invalid-feedback">{errors.spouse_name}</div>
                         </div>
+
                         <div className="mb-3">
+                            <label htmlFor="spouse_phone_number" className="form-label">Spouse Phone Number</label>
                             <input
-                                type="tel"
-                                name="spousePhoneNumber"
-                                value={formData.spousePhoneNumber}
+                                type="text"
+                                className={`form-control ${errors.spouse_phone_number ? 'is-invalid' : ''}`}
+                                id="spouse_phone_number"
+                                name="spouse_phone_number"
+                                value={formData.spouse_phone_number}
                                 onChange={handleChange}
-                                placeholder="Spouse Phone Number"
-                                className={`form-control ${errors.spousePhoneNumber ? 'is-invalid' : ''}`}
                             />
-                            {errors.spousePhoneNumber && <div className="invalid-feedback">{errors.spousePhoneNumber}</div>}
+                            <div className="invalid-feedback">{errors.spouse_phone_number}</div>
                         </div>
                     </>
                 )}
 
                 <div className="mb-3">
+                    <label htmlFor="country_of_residence" className="form-label">Country of Residence</label>
                     <select
-                        name="countryOfResidence"
-                        value={formData.countryOfResidence}
+                        className={`form-select ${errors.country_of_residence ? 'is-invalid' : ''}`}
+                        id="country_of_residence"
+                        name="country_of_residence"
+                        value={formData.country_of_residence}
                         onChange={handleChange}
-                        className={`form-select ${errors.countryOfResidence ? 'is-invalid' : ''}`}
                     >
                         <option value="">Select Country</option>
-                        {countries.map(country => (
-                            <option key={country} value={country}>{country}</option>
+                        {countries.map((country, index) => (
+                            <option key={index} value={country}>{country}</option>
                         ))}
                     </select>
-                    {errors.countryOfResidence && <div className="invalid-feedback">{errors.countryOfResidence}</div>}
+                    <div className="invalid-feedback">{errors.country_of_residence}</div>
                 </div>
 
-                {formData.countryOfResidence === 'Nigeria' && (
+                {formData.country_of_residence === 'Nigeria' && (
                     <>
                         <div className="mb-3">
+                            <label htmlFor="state_of_residence" className="form-label">State of Residence</label>
                             <select
-                                name="stateOfResidence"
-                                value={formData.stateOfResidence}
+                                className={`form-select ${errors.state_of_residence ? 'is-invalid' : ''}`}
+                                id="state_of_residence"
+                                name="state_of_residence"
+                                value={formData.state_of_residence}
                                 onChange={handleChange}
-                                className={`form-select ${errors.stateOfResidence ? 'is-invalid' : ''}`}
                             >
-                                <option value="" disabled>Select State</option>
-                                {states.map(state => (
-                                    <option key={state} value={state}>{state}</option>
+                                <option value="">Select State</option>
+                                {states.map((state, index) => (
+                                    <option key={index} value={state}>{state}</option>
                                 ))}
                             </select>
-                            {errors.stateOfResidence && <div className="invalid-feedback">{errors.stateOfResidence}</div>}
+                            <div className="invalid-feedback">{errors.state_of_residence}</div>
                         </div>
 
                         <div className="mb-3">
+                            <label htmlFor="lga_of_residence" className="form-label">LGA of Residence</label>
                             <select
-                                name="lgaOfResidence"
-                                value={formData.lgaOfResidence}
+                                className={`form-select ${errors.lga_of_residence ? 'is-invalid' : ''}`}
+                                id="lga_of_residence"
+                                name="lga_of_residence"
+                                value={formData.lga_of_residence}
                                 onChange={handleChange}
-                                className={`form-select ${errors.lgaOfResidence ? 'is-invalid' : ''}`}
                             >
-                                <option value="" disabled>Select LGA of Residence</option>
-                                {lgas.map(lga => (
-                                    <option key={lga} value={lga}>{lga}</option>
+                                <option value="">Select LGA</option>
+                                {lgas.map((lga, index) => (
+                                    <option key={index} value={lga}>{lga}</option>
                                 ))}
                             </select>
-                            {errors.lgaOfResidence && <div className="invalid-feedback">{errors.lgaOfResidence}</div>}
+                            <div className="invalid-feedback">{errors.lga_of_residence}</div>
                         </div>
 
                         <div className="mb-3">
+                            <label htmlFor="lga_of_origin" className="form-label">LGA of Origin</label>
                             <select
-                                name="lgaOfOrigin"
-                                value={formData.lgaOfOrigin}
+                                className={`form-select ${errors.lga_of_origin ? 'is-invalid' : ''}`}
+                                id="lga_of_origin"
+                                name="lga_of_origin"
+                                value={formData.lga_of_origin}
                                 onChange={handleChange}
-                                className={`form-select ${errors.lgaOfOrigin ? 'is-invalid' : ''}`}
                             >
-                                <option value="" disabled>Select LGA of Origin</option>
-                                {lgas.map(lga => (
-                                    <option key={lga} value={lga}>{lga}</option>
+                                <option value="">Select LGA</option>
+                                {lgas.map((lga, index) => (
+                                    <option key={index} value={lga}>{lga}</option>
                                 ))}
                             </select>
-                            {errors.lgaOfOrigin && <div className="invalid-feedback">{errors.lgaOfOrigin}</div>}
+                            <div className="invalid-feedback">{errors.lga_of_origin}</div>
                         </div>
 
                         <div className="mb-3">
+                            <label htmlFor="community_of_origin" className="form-label">Community of Origin</label>
                             <input
                                 type="text"
-                                name="communityOfOrigin"
-                                value={formData.communityOfOrigin}
+                                className={`form-control ${errors.community_of_origin ? 'is-invalid' : ''}`}
+                                id="community_of_origin"
+                                name="community_of_origin"
+                                value={formData.community_of_origin}
                                 onChange={handleChange}
-                                placeholder="Community of Origin"
-                                className={`form-control ${errors.communityOfOrigin ? 'is-invalid' : ''}`}
                             />
-                            {errors.communityOfOrigin && <div className="invalid-feedback">{errors.communityOfOrigin}</div>}
+                            <div className="invalid-feedback">{errors.community_of_origin}</div>
                         </div>
                     </>
                 )}
 
-                {/* ... (remaining form fields with similar structure) ... */}
-
                 <div className="mb-3">
+                    <label htmlFor="village" className="form-label">Village</label>
                     <input
                         type="text"
+                        className="form-control"
+                        id="village"
                         name="village"
                         value={formData.village}
                         onChange={handleChange}
-                        placeholder="Village"
-                        className={`form-control ${errors.village ? 'is-invalid' : ''}`}
                     />
-                    {errors.village && <div className="invalid-feedback">{errors.village}</div>}
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="kindred" className="form-label">Kindred</label>
                     <input
                         type="text"
+                        className="form-control"
+                        id="kindred"
                         name="kindred"
                         value={formData.kindred}
                         onChange={handleChange}
-                        placeholder="Kindred"
-                        className={`form-control ${errors.kindred ? 'is-invalid' : ''}`}
                     />
-                    {errors.kindred && <div className="invalid-feedback">{errors.kindred}</div>}
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="employment_status" className="form-label">Are You Employed?</label>
                     <select
-                        name="employed"
-                        value={formData.employed}
+                        className={`form-select ${errors.employment_status ? 'is-invalid' : ''}`}
+                        id="employment_status"
+                        name="employment_status"
+                        value={formData.employment_status}
                         onChange={handleChange}
-                        className={`form-select ${errors.employed ? 'is-invalid' : ''}`}
                     >
-                        <option value="" disabled>Employment Status</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
+                        <option value="">Select Status</option>
+                        <option value="employed">Employed</option>
+                        <option value="unemployed">Unemployed</option>
                     </select>
-                    {errors.employed && <div className="invalid-feedback">{errors.employed}</div>}
+                    <div className="invalid-feedback">{errors.employment_status}</div>
+                </div>
+
+                {formData.employment_status === 'employed' && (
+                    <div className="mb-3">
+                        <label htmlFor="occupation" className="form-label">Occupation</label>
+                        <input
+                            type="text"
+                            className={`form-control ${errors.occupation ? 'is-invalid' : ''}`}
+                            id="occupation"
+                            name="occupation"
+                            value={formData.occupation}
+                            onChange={handleChange}
+                        />
+                        <div className="invalid-feedback">{errors.occupation}</div>
+                    </div>
+                )}
+                <div className="mb-3">
+                    <label htmlFor="phone_number" className="form-label">Phone Number</label>
+                    <input
+                        type="tel"
+                        className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`}
+                        id="phone_number"
+                        name="phone_number"
+                        value={formData.phone_number}
+                        onChange={handleChange}
+                    />
+                    <div className="invalid-feedback">{errors.phone_number}</div>
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="alternate_phone_number" className="form-label">Alternate Phone Number</label>
+                    <input
+                        type="tel"
+                        className={`form-control ${errors.alternate_phone_number ? 'is-invalid' : ''}`}
+                        id="alternate_phone_number"
+                        name="alternate_phone_number"
+                        value={formData.alternate_phone_number}
+                        onChange={handleChange}
+                    />
+                    <div className="invalid-feedback">{errors.alternate_phone_number}</div>
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="next_of_kin" className="form-label">Next of Kin</label>
                     <input
                         type="text"
-                        name="occupation"
-                        value={formData.occupation}
+                        className={`form-control ${errors.next_of_kin ? 'is-invalid' : ''}`}
+                        id="next_of_kin"
+                        name="next_of_kin"
+                        value={formData.next_of_kin}
                         onChange={handleChange}
-                        placeholder="Occupation"
-                        className={`form-control ${errors.occupation ? 'is-invalid' : ''}`}
                     />
-                    {errors.occupation && <div className="invalid-feedback">{errors.occupation}</div>}
+                    <div className="invalid-feedback">{errors.next_of_kin}</div>
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="next_of_kin_phone_number" className="form-label">Next of Kin Phone Number</label>
                     <input
-                        type="number"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
+                        type="tel"
+                        className={`form-control ${errors.next_of_kin_phone_number ? 'is-invalid' : ''}`}
+                        id="next_of_kin_phone_number"
+                        name="next_of_kin_phone_number"
+                        value={formData.next_of_kin_phone_number}
                         onChange={handleChange}
-                        placeholder="PhoneNumber"
-                        className={`form-control ${errors.phoneNumber ? 'is-invalid' : ''}`}
                     />
-                    {errors.phoneNumber && <div className="invalid-feedback">{errors.phoneNumber}</div>}
+                    <div className="invalid-feedback">{errors.next_of_kin_phone_number}</div>
                 </div>
 
                 <div className="mb-3">
-                    <input
-                        type="number"
-                        name="alternatePhoneNumber"
-                        value={formData.alternatePhoneNumber}
-                        onChange={handleChange}
-                        placeholder="alternatePhoneNumber"
-                        className={`form-control ${errors.alternatePhoneNumber ? 'is-invalid' : ''}`}
-                    />
-                    {errors.alternatePhoneNumber && <div className="invalid-feedback">{errors.alternatePhoneNumber}</div>}
-                </div>
-
-                <div className="mb-3">
-                    <input
-                        type="text"
-                        name="nextOfKin"
-                        value={formData.nextOfKin}
-                        onChange={handleChange}
-                        placeholder="nextOfKin"
-                        className={`form-control ${errors.nextOfKin ? 'is-invalid' : ''}`}
-                    />
-                    {errors.nextOfKin && <div className="invalid-feedback">{errors.nextOfKin}</div>}
-                </div>
-
-                <div className="mb-3">
-                    <input
-                        type="number"
-                        name="nextOfKinPhoneNumber"
-                        value={formData.nextOfKinPhoneNumber}
-                        onChange={handleChange}
-                        placeholder="nextOfKinPhoneNumber"
-                        className={`form-control ${errors.nextOfKinPhoneNumber ? 'is-invalid' : ''}`}
-                    />
-                    {errors.nextOfKinPhoneNumber && <div className="invalid-feedback">{errors.nextOfKinPhoneNumber}</div>}
-                </div>
-
-                <div className="mb-3">
+                    <label htmlFor="valid_means_of_identification" className="form-label">Valid Means of identification</label>
                     <select
-                        name="validMeansOfIdentification"
-                        value={formData.validMeansOfIdentification}
+                        className={`form-select ${errors.valid_means_of_identification ? 'is-invalid' : ''}`}
+                        id="valid_means_of_identification"
+                        name="valid_means_of_identification"
+                        value={formData.valid_means_of_identification}
                         onChange={handleChange}
-                        className={`form-select ${errors.validMeansOfIdentification ? 'is-invalid' : ''}`}
                     >
-                        <option value="" disabled>Valid Means of Identification</option>
-                        <option value="nationalId">National ID</option>
-                        <option value="driversLicense">Driver's License</option>
-                        <option value="passport">Passport</option>
-                        <option value="votersCard">Voter's Card</option>
+                        <option value="">Select option</option>
+                        <option value="drivers_liscence">Drivers Licsence</option>
+                        <option value="NIN">National Identity Number</option>
                     </select>
-                    {errors.validMeansOfIdentification && <div className="invalid-feedback">{errors.validMeansOfIdentification}</div>}
+                    <div className="invalid-feedback">{errors.valid_means_of_identification}</div>
                 </div>
 
                 <div className="mb-3">
+                    <label htmlFor="valid_identification_number" className="form-label">Valid Identification Number</label>
                     <input
                         type="number"
-                        name="validIdentificationNumber"
-                        value={formData.validIdentificationNumber}
+                        className={`form-control ${errors.valid_identification_number ? 'is-invalid' : ''}`}
+                        id="valid_identification_number"
+                        name="valid_identification_number"
+                        value={formData.valid_identification_number}
                         onChange={handleChange}
-                        placeholder="validIdentificationNumber"
-                        className={`form-control ${errors.validIdentificationNumber ? 'is-invalid' : ''}`}
                     />
-                    {errors.validIdentificationNumber && <div className="invalid-feedback">{errors.validIdentificationNumber}</div>}
+                    <div className="invalid-feedback">{errors.valid_identification_number}</div>
                 </div>
 
-                
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
         </div>
-        </>
-    )
-}
+    );
+};
 
-export default indigenes
+export default IndigenesForm;
