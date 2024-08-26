@@ -27,49 +27,68 @@ function Home() {
 
     return (
         <>
-            <div className="container mt-5">
-            <div className="card p-4">
-                <h1 className="text-center">Are you an indigene of Anambra state?</h1>
-                {!showSecondQuestion && (
-                    <div className="text-center mt-4">
-                        <button
-                            className="btn btn-primary mx-2"
-                            onClick={() => handleUserChoice(true)}
-                        >
-                            Yes
-                        </button>
-                        <button
-                            className="btn btn-secondary mx-2"
-                            onClick={() => handleUserChoice(false)}
-                        >
-                            No
-                        </button>
+            <div className="bg-light min-vh-100 d-flex align-items-center">
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-md-8 col-lg-6">
+                        <div className="card shadow-lg border-0 rounded-lg mt-5">
+                            <div className="card-header bg-primary text-white text-center py-4">
+                                {/* <img src={logo} alt="Logo" className="mb-3" style={{maxWidth: '150px'}} /> */}
+                                <h2 className="font-weight-light">Anambra State Declaration Form</h2>
+                            </div>
+                            <div className="card-body">
+                                {!showSecondQuestion ? (
+                                    <>
+                                        <h3 className="text-center mb-4">Are you an indigene of Anambra state?</h3>
+                                        <div className="d-flex justify-content-center">
+                                            <button
+                                                className="btn btn-primary btn-lg mx-2"
+                                                onClick={() => handleUserChoice(true)}
+                                            >
+                                                Yes
+                                            </button>
+                                            <button
+                                                className="btn btn-outline-primary btn-lg mx-2"
+                                                onClick={() => handleUserChoice(false)}
+                                            >
+                                                No
+                                            </button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h3 className="text-center mb-4">Do you reside in Anambra state?</h3>
+                                        <div className="d-flex justify-content-center">
+                                            <button
+                                                className="btn btn-primary btn-lg mx-2"
+                                                onClick={() => handleSecondChoice(true)}
+                                            >
+                                                Yes
+                                            </button>
+                                            <button
+                                                className="btn btn-outline-primary btn-lg mx-2"
+                                                onClick={() => handleSecondChoice(false)}
+                                            >
+                                                No
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                                
+                                {errorMessage && (
+                                    <div className="alert alert-danger mt-4 text-center" role="alert">
+                                        {errorMessage}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="card-footer text-center py-3">
+                                <div className="small">
+                                    <a href="#">Need help? Contact support</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                )}
-
-                {showSecondQuestion && (
-                    <div className="text-center mt-4">
-                        <h2>Do you reside in Anambra state?</h2>
-                        <button
-                            className="btn btn-primary mx-2"
-                            onClick={() => handleSecondChoice(true)}
-                        >
-                            Yes
-                        </button>
-                        <button
-                            className="btn btn-secondary mx-2"
-                            onClick={() => handleSecondChoice(false)}
-                        >
-                            No
-                        </button>
-                    </div>
-                )}
-
-                {errorMessage && (
-                    <div className="alert alert-danger mt-4 text-center" role="alert">
-                        {errorMessage}
-                    </div>
-                )}
+                </div>
             </div>
         </div>
         </>

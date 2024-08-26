@@ -1,10 +1,11 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import axios from 'axios'
+import '../App.css'
 
 function nonindigenes() {
 
-    const [formData, setFormData] = useState({
+    const initialFormState = {
         submission_type: 'Non-indigene',
         surname: '',
         first_name: '',
@@ -31,8 +32,9 @@ function nonindigenes() {
         next_of_kin_phone_number: '',
         valid_means_of_identification: '',
         valid_identification_number: '',
-    });
+    };
 
+    const [formData, setFormData] = useState(initialFormState);
     const [errors, setErrors] = useState({});
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
@@ -183,6 +185,11 @@ function nonindigenes() {
         return Object.keys(tempErrors).length === 0;
     };
 
+    const resetForm = () => {
+        setFormData(initialFormState);
+        setErrors({});
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validateForm();
@@ -192,6 +199,7 @@ function nonindigenes() {
                 console.log(response.data);
                 if (response.data.status === "success") {
                     alert("Form submitted successfully!");
+                    resetForm();
                 } else {
                     alert("Failed to submit form: " + response.data.message);
                 }
@@ -206,362 +214,394 @@ function nonindigenes() {
 
     return (
         <>
-            <div className="container mt-5">
-            <h1 className='text-center'>Anambra State Declaration Form</h1>
-            <p className='text-center mb-5'>(For Indigenes Only)</p>
-            <form onSubmit={handleSubmit} method='POST'>
-                <div className="mb-3">
-                    <label htmlFor="surname" className="form-label">Surname</label>
-                    <input
-                        type="text"
-                        className={`form-control ${errors.surname ? 'is-invalid' : ''}`}
-                        id="surname"
-                        name="surname"
-                        value={formData.surname}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.surname}</div>
-                </div>
+            <div className="container-fluid bg-light py-5">
+            <div className="row justify-content-center">
+                <div className="col-md-8 col-lg-6">
+                    <div className="card shadow-lg border-0">
+                        <div className="card-body p-5">
+                            <div className="text-center mb-5">
+                                {/* <img src={logo} alt="Logo" className="img-fluid mb-4" style={{maxHeight: '100px'}} /> */}
+                                <h1 className="h3 mb-3 fw-bold text-primary">Anambra State Declaration Form</h1>
+                                <p className="text-muted">(For Non-Indigenes Residing in Anambra Only)</p>
+                            </div>
+                            <form onSubmit={handleSubmit} method='POST' className="needs-validation" noValidate>
+                                <div className="row g-3">
+                                    <div className="col-md-4">
+                                        <label htmlFor="surname" className="form-label">Surname</label>
+                                        <input
+                                            type="text"
+                                            className={`form-control ${errors.surname ? 'is-invalid' : ''}`}
+                                            id="surname"
+                                            name="surname"
+                                            value={formData.surname}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.surname}</div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label htmlFor="first_name" className="form-label">First Name</label>
+                                        <input
+                                            type="text"
+                                            className={`form-control ${errors.first_name ? 'is-invalid' : ''}`}
+                                            id="first_name"
+                                            name="first_name"
+                                            value={formData.first_name}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.first_name}</div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <label htmlFor="middle_name" className="form-label">Middle Name</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="middle_name"
+                                            name="middle_name"
+                                            value={formData.middle_name}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
 
-                <div className="mb-3">
-                    <label htmlFor="first_name" className="form-label">First Name</label>
-                    <input
-                        type="text"
-                        className={`form-control ${errors.first_name ? 'is-invalid' : ''}`}
-                        id="first_name"
-                        name="first_name"
-                        value={formData.first_name}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.first_name}</div>
-                </div>
+                                {/* Continue with other form fields, wrapping related fields in row and col classes */}
+                                {/* Example for email and date of birth */}
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-6">
+                                        <label htmlFor="email" className="form-label">Email</label>
+                                        <input
+                                            type="email"
+                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.email}</div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="date_of_birth" className="form-label">Date of Birth</label>
+                                        <input
+                                            type="date"
+                                            className={`form-control ${errors.date_of_birth ? 'is-invalid' : ''}`}
+                                            id="date_of_birth"
+                                            name="date_of_birth"
+                                            value={formData.date_of_birth}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.date_of_birth}</div>
+                                    </div>
+                                </div>
 
-                <div className="mb-3">
-                    <label htmlFor="middle_name" className="form-label">Middle Name</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="middle_name"
-                        name="middle_name"
-                        value={formData.middle_name}
-                        onChange={handleChange}
-                    />
-                </div>
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-6">
+                                        <label htmlFor="gender" className="form-label">Gender</label>
+                                        <select
+                                            className={`form-select ${errors.gender ? 'is-invalid' : ''}`}
+                                            id="gender"
+                                            name="gender"
+                                            value={formData.gender}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="" disabled>Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                        <div className="invalid-feedback">{errors.gender}</div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="marital_status" className="form-label">Marital Status</label>
+                                        <select
+                                            className={`form-select ${errors.marital_status ? 'is-invalid' : ''}`}
+                                            id="marital_status"
+                                            name="marital_status"
+                                            value={formData.marital_status}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="" disabled>Select Marital Status</option>
+                                            <option value="single">Single</option>
+                                            <option value="married">Married</option>
+                                            <option value="divorced">Divorced</option>
+                                            <option value="widowed">Widowed</option>
+                                        </select>
+                                        <div className="invalid-feedback">{errors.marital_status}</div>
+                                    </div>
+                                </div>
 
-                <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Email</label>
-                    <input
-                        type="email"
-                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.email}</div>
-                </div>
+                                {formData.marital_status === 'married' && (
+                                    <>
+                                        <div className="row g-3 mt-3">
+                                            <div className="col-md-6">
+                                                <label htmlFor="spouse_name" className="form-label">Spouse Name</label>
+                                                <input
+                                                    type="text"
+                                                    className={`form-control ${errors.spouse_name ? 'is-invalid' : ''}`}
+                                                    id="spouse_name"
+                                                    name="spouse_name"
+                                                    value={formData.spouse_name}
+                                                    onChange={handleChange}
+                                                />
+                                                <div className="invalid-feedback">{errors.spouse_name}</div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label htmlFor="spouse_phone_number" className="form-label">Spouse Phone Number</label>
+                                                <input
+                                                    type="text"
+                                                    className={`form-control ${errors.spouse_phone_number ? 'is-invalid' : ''}`}
+                                                    id="spouse_phone_number"
+                                                    name="spouse_phone_number"
+                                                    value={formData.spouse_phone_number}
+                                                    onChange={handleChange}
+                                                />
+                                                <div className="invalid-feedback">{errors.spouse_phone_number}</div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
 
-                <div className="mb-3">
-                    <label htmlFor="date_of_birth" className="form-label">Date of Birth</label>
-                    <input
-                        type="date"
-                        className={`form-control ${errors.date_of_birth ? 'is-invalid' : ''}`}
-                        id="date_of_birth"
-                        name="date_of_birth"
-                        value={formData.date_of_birth}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.date_of_birth}</div>
-                </div>
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-12">
+                                        <label htmlFor="country_of_residence" className="form-label">Country of Residence</label>
+                                        <select
+                                            className={`form-select ${errors.country_of_residence ? 'is-invalid' : ''}`}
+                                            id="country_of_residence"
+                                            name="country_of_residence"
+                                            value={formData.country_of_residence}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="" disabled>Select Country</option>
+                                            {countries.map((country, index) => (
+                                                <option key={index} value={country}>{country}</option>
+                                            ))}
+                                        </select>
+                                        <div className="invalid-feedback">{errors.country_of_residence}</div>
+                                    </div>
+                                    
+                                </div>
 
-                <div className="mb-3">
-                    <label htmlFor="gender" className="form-label">Gender</label>
-                    <select
-                        className={`form-select ${errors.gender ? 'is-invalid' : ''}`}
-                        id="gender"
-                        name="gender"
-                        value={formData.gender}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                    <div className="invalid-feedback">{errors.gender}</div>
-                </div>
+                                {formData.country_of_residence === 'Nigeria' && (
+                                    <>
+                                        <div className="row g-3 mt-3">
+                                            <div className="col-md-6">
+                                                <label htmlFor="state_of_residence" className="form-label">State of Residence</label>
+                                                <select
+                                                    className={`form-select ${errors.state_of_residence ? 'is-invalid' : ''}`}
+                                                    id="state_of_residence"
+                                                    name="state_of_residence"
+                                                    value={formData.state_of_residence}
+                                                    onChange={handleChange}
+                                                >
+                                                    <option value="" disabled>Select State</option>
+                                                    {states.map((state, index) => (
+                                                        <option key={index} value={state}>{state}</option>
+                                                    ))}
+                                                </select>
+                                                <div className="invalid-feedback">{errors.state_of_residence}</div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label htmlFor="lga_of_residence" className="form-label">LGA of Residence</label>
+                                                <select
+                                                    className={`form-select ${errors.lga_of_residence ? 'is-invalid' : ''}`}
+                                                    id="lga_of_residence"
+                                                    name="lga_of_residence"
+                                                    value={formData.lga_of_residence}
+                                                    onChange={handleChange}
+                                                >
+                                                    <option value="" disabled>Select LGA</option>
+                                                    {lgas.map((lga, index) => (
+                                                        <option key={index} value={lga}>{lga}</option>
+                                                    ))}
+                                                </select>
+                                                <div className="invalid-feedback">{errors.lga_of_residence}</div>
+                                            </div>
+                                        </div>
+                                        <div className="row g-3 mt-3">
+                                            <div className="col-md-6">
+                                                <label htmlFor="lga_of_origin" className="form-label">LGA of Origin</label>
+                                                <select
+                                                    className={`form-select ${errors.lga_of_origin ? 'is-invalid' : ''}`}
+                                                    id="lga_of_origin"
+                                                    name="lga_of_origin"
+                                                    value={formData.lga_of_origin}
+                                                    onChange={handleChange}
+                                                >
+                                                    <option value="" disabled>Select LGA</option>
+                                                    {lgas.map((lga, index) => (
+                                                        <option key={index} value={lga}>{lga}</option>
+                                                    ))}
+                                                </select>
+                                                <div className="invalid-feedback">{errors.lga_of_origin}</div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label htmlFor="community_of_origin" className="form-label">Community of Origin</label>
+                                                <input
+                                                    type="text"
+                                                    className={`form-control ${errors.community_of_origin ? 'is-invalid' : ''}`}
+                                                    id="community_of_origin"
+                                                    name="community_of_origin"
+                                                    value={formData.community_of_origin}
+                                                    onChange={handleChange}
+                                                />
+                                                <div className="invalid-feedback">{errors.community_of_origin}</div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
 
-                <div className="mb-3">
-                    <label htmlFor="marital_status" className="form-label">Marital Status</label>
-                    <select
-                        className={`form-select ${errors.marital_status ? 'is-invalid' : ''}`}
-                        id="marital_status"
-                        name="marital_status"
-                        value={formData.marital_status}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select Marital Status</option>
-                        <option value="single">Single</option>
-                        <option value="married">Married</option>
-                        <option value="divorced">Divorced</option>
-                        <option value="widowed">Widowed</option>
-                    </select>
-                    <div className="invalid-feedback">{errors.marital_status}</div>
-                </div>
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-6">
+                                        <label htmlFor="tribe" className="form-label">Tribe</label>
+                                        <input
+                                            type="text"
+                                            className={`form-control ${errors.tribe ? 'is-invalid' : ''}`}
+                                            id="tribe"
+                                            name="tribe"
+                                            value={formData.tribe}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.tribe}</div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="kindred" className="form-label">Kindred</label>
+                                        <input
+                                            type="text"
+                                            className={`form-control ${errors.kindred ? 'is-invalid' : ''}`}
+                                            id="kindred"
+                                            name="kindred"
+                                            value={formData.kindred}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.kindred}</div>
+                                    </div>
+                                </div>
 
-                {formData.marital_status === 'married' && (
-                    <>
-                        <div className="mb-3">
-                            <label htmlFor="spouse_name" className="form-label">Spouse Name</label>
-                            <input
-                                type="text"
-                                className={`form-control ${errors.spouse_name ? 'is-invalid' : ''}`}
-                                id="spouse_name"
-                                name="spouse_name"
-                                value={formData.spouse_name}
-                                onChange={handleChange}
-                            />
-                            <div className="invalid-feedback">{errors.spouse_name}</div>
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-6">
+                                        <label htmlFor="employment_status" className="form-label">Are You Employed?</label>
+                                        <select
+                                            className={`form-select ${errors.employment_status ? 'is-invalid' : ''}`}
+                                            id="employment_status"
+                                            name="employment_status"
+                                            value={formData.employment_status}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="" disabled>Select Status</option>
+                                            <option value="employed">Employed</option>
+                                            <option value="unemployed">Unemployed</option>
+                                        </select>
+                                        <div className="invalid-feedback">{errors.employment_status}</div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        {formData.employment_status === 'employed' && (
+                                            <>
+                                                <label htmlFor="occupation" className="form-label">Occupation</label>
+                                                <input
+                                                    type="text"
+                                                    className={`form-control ${errors.occupation ? 'is-invalid' : ''}`}
+                                                    id="occupation"
+                                                    name="occupation"
+                                                    value={formData.occupation}
+                                                    onChange={handleChange}
+                                                />
+                                                <div className="invalid-feedback">{errors.occupation}</div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-6">
+                                        <label htmlFor="phone_number" className="form-label">Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`}
+                                            id="phone_number"
+                                            name="phone_number"
+                                            value={formData.phone_number}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.phone_number}</div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="alternate_phone_number" className="form-label">Alternate Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            className={`form-control ${errors.alternate_phone_number ? 'is-invalid' : ''}`}
+                                            id="alternate_phone_number"
+                                            name="alternate_phone_number"
+                                            value={formData.alternate_phone_number}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.alternate_phone_number}</div>
+                                    </div>
+                                </div>
+
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-6">
+                                        <label htmlFor="next_of_kin" className="form-label">Next of Kin</label>
+                                        <input
+                                            type="text"
+                                            className={`form-control ${errors.next_of_kin ? 'is-invalid' : ''}`}
+                                            id="next_of_kin"
+                                            name="next_of_kin"
+                                            value={formData.next_of_kin}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.next_of_kin}</div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="next_of_kin_phone_number" className="form-label">Next of Kin Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            className={`form-control ${errors.next_of_kin_phone_number ? 'is-invalid' : ''}`}
+                                            id="next_of_kin_phone_number"
+                                            name="next_of_kin_phone_number"
+                                            value={formData.next_of_kin_phone_number}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.next_of_kin_phone_number}</div>
+                                    </div>
+                                </div>
+
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-6">
+                                        <label htmlFor="valid_means_of_identification" className="form-label">Valid Means of identification</label>
+                                        <select
+                                            className={`form-select ${errors.valid_means_of_identification ? 'is-invalid' : ''}`}
+                                            id="valid_means_of_identification"
+                                            name="valid_means_of_identification"
+                                            value={formData.valid_means_of_identification}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="" disabled>Select option</option>
+                                            <option value="drivers_liscence">Drivers Licsence</option>
+                                            <option value="NIN">National Identity Number</option>
+                                        </select>
+                                        <div className="invalid-feedback">{errors.valid_means_of_identification}</div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label htmlFor="valid_identification_number" className="form-label">Valid Identification Number</label>
+                                        <input
+                                            type="number"
+                                            className={`form-control ${errors.valid_identification_number ? 'is-invalid' : ''}`}
+                                            id="valid_identification_number"
+                                            name="valid_identification_number"
+                                            value={formData.valid_identification_number}
+                                            onChange={handleChange}
+                                        />
+                                        <div className="invalid-feedback">{errors.valid_identification_number}</div>
+                                    </div>
+                                </div>
+
+
+                                {/* Submit button */}
+                                <div className="d-grid gap-2 mt-5">
+                                    <button type="submit" className="btn btn-primary btn-lg">Submit</button>
+                                </div>
+                            </form>
                         </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="spouse_phone_number" className="form-label">Spouse Phone Number</label>
-                            <input
-                                type="text"
-                                className={`form-control ${errors.spouse_phone_number ? 'is-invalid' : ''}`}
-                                id="spouse_phone_number"
-                                name="spouse_phone_number"
-                                value={formData.spouse_phone_number}
-                                onChange={handleChange}
-                            />
-                            <div className="invalid-feedback">{errors.spouse_phone_number}</div>
-                        </div>
-                    </>
-                )}
-
-                <div className="mb-3">
-                    <label htmlFor="country_of_residence" className="form-label">Country of Residence</label>
-                    <select
-                        className={`form-select ${errors.country_of_residence ? 'is-invalid' : ''}`}
-                        id="country_of_residence"
-                        name="country_of_residence"
-                        value={formData.country_of_residence}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select Country</option>
-                        {countries.map((country, index) => (
-                            <option key={index} value={country}>{country}</option>
-                        ))}
-                    </select>
-                    <div className="invalid-feedback">{errors.country_of_residence}</div>
-                </div>
-
-                {formData.country_of_residence === 'Nigeria' && (
-                    <>
-                        <div className="mb-3">
-                            <label htmlFor="state_of_residence" className="form-label">State of Residence</label>
-                            <select
-                                className={`form-select ${errors.state_of_residence ? 'is-invalid' : ''}`}
-                                id="state_of_residence"
-                                name="state_of_residence"
-                                value={formData.state_of_residence}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select State</option>
-                                {states.map((state, index) => (
-                                    <option key={index} value={state}>{state}</option>
-                                ))}
-                            </select>
-                            <div className="invalid-feedback">{errors.state_of_residence}</div>
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="lga_of_residence" className="form-label">LGA of Residence</label>
-                            <select
-                                className={`form-select ${errors.lga_of_residence ? 'is-invalid' : ''}`}
-                                id="lga_of_residence"
-                                name="lga_of_residence"
-                                value={formData.lga_of_residence}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select LGA</option>
-                                {lgas.map((lga, index) => (
-                                    <option key={index} value={lga}>{lga}</option>
-                                ))}
-                            </select>
-                            <div className="invalid-feedback">{errors.lga_of_residence}</div>
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="lga_of_origin" className="form-label">LGA of Origin</label>
-                            <select
-                                className={`form-select ${errors.lga_of_origin ? 'is-invalid' : ''}`}
-                                id="lga_of_origin"
-                                name="lga_of_origin"
-                                value={formData.lga_of_origin}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select LGA</option>
-                                {lgas.map((lga, index) => (
-                                    <option key={index} value={lga}>{lga}</option>
-                                ))}
-                            </select>
-                            <div className="invalid-feedback">{errors.lga_of_origin}</div>
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="community_of_origin" className="form-label">Community of Origin</label>
-                            <input
-                                type="text"
-                                className={`form-control ${errors.community_of_origin ? 'is-invalid' : ''}`}
-                                id="community_of_origin"
-                                name="community_of_origin"
-                                value={formData.community_of_origin}
-                                onChange={handleChange}
-                            />
-                            <div className="invalid-feedback">{errors.community_of_origin}</div>
-                        </div>
-                    </>
-                )}
-
-                <div className="mb-3">
-                    <label htmlFor="tribe" className="form-label">tribe</label>
-                    <input
-                        type="text"
-                        className={`form-control ${errors.tribe ? 'is-invalid' : ''}`}
-                        id="tribe"
-                        name="tribe"
-                        value={formData.tribe}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.tribe}</div>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="kindred" className="form-label">Kindred</label>
-                    <input
-                        type="text"
-                        className={`form-control ${errors.kindred ? 'is-invalid' : ''}`}
-                        id="kindred"
-                        name="kindred"
-                        value={formData.kindred}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.kindred}</div>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="employment_status" className="form-label">Are You Employed?</label>
-                    <select
-                        className={`form-select ${errors.employment_status ? 'is-invalid' : ''}`}
-                        id="employment_status"
-                        name="employment_status"
-                        value={formData.employment_status}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select Status</option>
-                        <option value="employed">Employed</option>
-                        <option value="unemployed">Unemployed</option>
-                    </select>
-                    <div className="invalid-feedback">{errors.employment_status}</div>
-                </div>
-
-                {formData.employment_status === 'employed' && (
-                    <div className="mb-3">
-                        <label htmlFor="occupation" className="form-label">Occupation</label>
-                        <input
-                            type="text"
-                            className={`form-control ${errors.occupation ? 'is-invalid' : ''}`}
-                            id="occupation"
-                            name="occupation"
-                            value={formData.occupation}
-                            onChange={handleChange}
-                        />
-                        <div className="invalid-feedback">{errors.occupation}</div>
                     </div>
-                )}
-                <div className="mb-3">
-                    <label htmlFor="phone_number" className="form-label">Phone Number</label>
-                    <input
-                        type="tel"
-                        className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`}
-                        id="phone_number"
-                        name="phone_number"
-                        value={formData.phone_number}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.phone_number}</div>
                 </div>
-
-                <div className="mb-3">
-                    <label htmlFor="alternate_phone_number" className="form-label">Alternate Phone Number</label>
-                    <input
-                        type="tel"
-                        className={`form-control ${errors.alternate_phone_number ? 'is-invalid' : ''}`}
-                        id="alternate_phone_number"
-                        name="alternate_phone_number"
-                        value={formData.alternate_phone_number}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.alternate_phone_number}</div>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="next_of_kin" className="form-label">Next of Kin</label>
-                    <input
-                        type="text"
-                        className={`form-control ${errors.next_of_kin ? 'is-invalid' : ''}`}
-                        id="next_of_kin"
-                        name="next_of_kin"
-                        value={formData.next_of_kin}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.next_of_kin}</div>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="next_of_kin_phone_number" className="form-label">Next of Kin Phone Number</label>
-                    <input
-                        type="tel"
-                        className={`form-control ${errors.next_of_kin_phone_number ? 'is-invalid' : ''}`}
-                        id="next_of_kin_phone_number"
-                        name="next_of_kin_phone_number"
-                        value={formData.next_of_kin_phone_number}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.next_of_kin_phone_number}</div>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="valid_means_of_identification" className="form-label">Valid Means of identification</label>
-                    <select
-                        className={`form-select ${errors.valid_means_of_identification ? 'is-invalid' : ''}`}
-                        id="valid_means_of_identification"
-                        name="valid_means_of_identification"
-                        value={formData.valid_means_of_identification}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select option</option>
-                        <option value="drivers_liscence">Drivers Licsence</option>
-                        <option value="NIN">National Identity Number</option>
-                    </select>
-                    <div className="invalid-feedback">{errors.valid_means_of_identification}</div>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="valid_identification_number" className="form-label">Valid Identification Number</label>
-                    <input
-                        type="number"
-                        className={`form-control ${errors.valid_identification_number ? 'is-invalid' : ''}`}
-                        id="valid_identification_number"
-                        name="valid_identification_number"
-                        value={formData.valid_identification_number}
-                        onChange={handleChange}
-                    />
-                    <div className="invalid-feedback">{errors.valid_identification_number}</div>
-                </div>
-
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </form>
+            </div>
         </div>
         </>
     )
