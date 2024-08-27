@@ -18,6 +18,7 @@ const IndigenesForm = () => {
         spouse_phone_number: '',
         country_of_residence: '',
         state_of_residence: '',
+        state_of_origin: '',
         lga_of_residence: '',
         lga_of_origin: '',
         community_of_origin: '',
@@ -28,10 +29,13 @@ const IndigenesForm = () => {
         occupation: '',
         phone_number: '',
         alternate_phone_number: '',
+        phone_on_whatsapp: '',
+        alternate_on_whatsapp: '',
         next_of_kin: '',
         next_of_kin_phone_number: '',
         valid_means_of_identification: '',
         valid_identification_number: '',
+        agreePrivacyPolicy: false,
     };
 
     const [formData, setFormData] = useState(initialFormState);
@@ -70,11 +74,36 @@ const IndigenesForm = () => {
         // Add other states and their LGAs here...
     };
 
+    const [communities, setCommunities] = useState([]);
+    const [anambraLGAs] = useState({
+        "Aguata": ["Achina", "Aguluezechukwu", "Akpo", "Amesi", "Ekwulobia", "Ezinifite", "Igbo-Ukwu", "Ikenga", "Isuofia", "Nkpologwu", "Uga", "Oraeri", "Umuchu", "Umuona"],
+        "Anambra East": ["Aguleri", "Enugwu-Aguleri", "Enugu-Otu Aguleri", "Eziagulu Otu", "Igbariam", "Ikem-Ivite", "Mkpunando", "Nando", "Nsugbe", "Umueri", "Umuoba-Anam"],
+        "Anambra West": ["Ezi-Anam", "Ifite-Anam", "Inoma", "Nzam", "Olumbanasa", "Oroma-Etiti", "Owelle", "Ukwalla", "Umuenwelum", "Umueze-Anam"],
+        "Anaocha": ["Adazi-Ani", "Adazi-Enu", "Adazi-Nnukwu", "Agulu", "Aguluzigbo", "Akwaeze", "Ichida", "Neni", "Nri", "Obeledu"],
+        "Awka North": ["Achalla", "Ugbene", "Amanuke", "Awba-Ofemili", "Ebenebe", "Isuaniocha", "Mgbakwu", "Amansea", "Ugbenu", "Urum"],
+        "Awka South": ["Amawbia", "Awka", "Ezinator", "Isiagu", "Nibo", "Nise", "Mbaukwu", "Okpuno", "Umuawulu"],
+        "Ayamelum": ["Anaku", "Ifite-Ogwari", "Igbakwu", "Omasi", "Omor", "Umerum", "Umueje", "Umumbo"],
+        "Dunukofia": ["Ifitedunu", "Nawgu", "Ukpo", "Ukwulu", "Umudioka", "Umunachi"],
+        "Ekwusigo": ["Ichi", "Ihembosi", "Oraifite", "Ozubulu"],
+        "Idemili North": ["Abacha", "Abatete", "Eziowelle", "Ideani", "Nkpor", "Obosi", "Ogidi", "Oraukwu", "Uke", "Umuoji"],
+        "Idemili South": ["Akwa-Ukwu", "Alor", "Awka-Etiti", "Nnobi", "Nnokwa", "Oba", "Ojoto"],
+        "Ihiala": ["Amorka", "Azia", "Ihiala", "Isseke", "Mbosi", "Okija", "Orsumoghu", "Lilu", "Ubuluisiuzo-Isiuzor", "Uli"],
+        "Njikoka": ["Abagana", "Abba", "Enugu Agidi", "Enugwu-Ukwu", "Nawfia", "Nimo"],
+        "Nnewi North": ["Nnewi"],
+        "Nnewi South": ["Akwaihedi", "Amichi", "Azigbo", "Ebenator", "Ekwulumili", "Ezinifite", "Osumenyi", "Ukpor", "Unubi", "Utuh"],
+        "Ogbaru": ["Akili-Ogidi", "Akili-Ozizor", "Amiyi", "Atani", "Mputu", "Obeagwe", "Ochuche-Umodu", "Odekpe", "Ogbakuba", "Ogwu-Aniocha", "Ogwu-Ikpele", "Ohita", "Okpoko", "Ossomala", "Umunankwo", "Umuzu"],
+        "Onitsha North": ["Onitsha"],
+        "Onitsha South": ["Onitsha"],
+        "Orumba North": ["Ajali", "Amaetiti", "Amaokpala", "Awa", "Awgbu", "Nanka", "Ndikelionwu", "Ndiokolo", "Ndiokpalaeke", "Ndiokpalaeze", "Ndiowu", "Ndiukwuenu", "Oko", "Okpeze", "Omogho", "Ufuma"],
+        "Orumba South": ["Akpu", "Agbudu", "Enugu-Umuonyia", "Eziagu", "Ezira", "Ihite", "Isulo", "Nawfija", "Ogboji", "Ogbunka", "Onneh", "Owerre-Ezukala", "Umuchukwu", "Umunze", "Umuomaku"],
+        "Oyi": ["Awkuzu", "Nkwelle-Ezunaka", "Nteje", "Ogbunike", "Umunya"]
+    });
+
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData(prevData => ({
             ...prevData,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : value
         }));
 
         setErrors(prevErrors => ({
@@ -92,7 +121,6 @@ const IndigenesForm = () => {
                     ...prevData,
                     state_of_residence: '',
                     lga_of_residence: '',
-                    lga_of_origin: ''
                 }));
             }
         }
@@ -104,6 +132,16 @@ const IndigenesForm = () => {
                 ...prevData,
                 lga_of_residence: '',
                 lga_of_origin: ''
+            }));
+        }
+
+        if (name === 'lga_of_origin') {
+            // Update communities based on selected LGA of Origin
+            const communities = anambraLGAs[value] || [];
+            setCommunities(communities);
+            setFormData((prevData) => ({
+                ...prevData,
+                community_of_origin: ''
             }));
         }
 
@@ -137,6 +175,7 @@ const IndigenesForm = () => {
         // Validate required fields
         const requiredFields = [
             'surname', 'first_name', 'email', 'village', 'kindred', 'date_of_birth', 'gender', 'marital_status',
+            'lga_of_origin', 'community_of_origin', 'phone_on_whatsapp',
             'country_of_residence', 'employment_status', 'phone_number',
             'next_of_kin', 'next_of_kin_phone_number', 'valid_means_of_identification',
             'valid_identification_number'
@@ -183,6 +222,10 @@ const IndigenesForm = () => {
             tempErrors.email = "Invalid email address";
         }
 
+        if (!formData.agreePrivacyPolicy) {
+            tempErrors.agreePrivacyPolicy = "You must agree to the privacy policy";
+        }
+
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
     };
@@ -222,13 +265,13 @@ const IndigenesForm = () => {
     return (
         <>
             <div className="container-fluid bg-light py-5">
-            {showPopup && (
-                <div className="popup">
-                    <div className="popup-content">
-                        <p>Your submission has been received.</p>
+                {showPopup && (
+                    <div className="popup">
+                        <div className="popup-content">
+                            <p>Your submission has been received.</p>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
                         <div className="card shadow-lg border-0">
@@ -334,8 +377,6 @@ const IndigenesForm = () => {
                                                 <option value="" disabled>Select Marital Status</option>
                                                 <option value="single">Single</option>
                                                 <option value="married">Married</option>
-                                                <option value="divorced">Divorced</option>
-                                                <option value="widowed">Widowed</option>
                                             </select>
                                             <div className="invalid-feedback">{errors.marital_status}</div>
                                         </div>
@@ -373,93 +414,43 @@ const IndigenesForm = () => {
                                     )}
 
                                     <div className="row g-3 mt-3">
-                                        <div className="col-md-12">
-                                            <label htmlFor="country_of_residence" className="form-label">Country of Residence</label>
+                                        <div className="col-md-6">
+                                            <label htmlFor="lga_of_origin" className="form-label">LGA of Origin</label>
                                             <select
-                                                className={`form-select ${errors.country_of_residence ? 'is-invalid' : ''}`}
-                                                id="country_of_residence"
-                                                name="country_of_residence"
-                                                value={formData.country_of_residence}
+                                                className={`form-select ${errors.lga_of_origin ? 'is-invalid' : ''}`}
+                                                id="lga_of_origin"
+                                                name="lga_of_origin"
+                                                value={formData.lga_of_origin}
                                                 onChange={handleChange}
                                             >
-                                                <option value="" disabled>Select Country</option>
-                                                {countries.map((country, index) => (
-                                                    <option key={index} value={country}>{country}</option>
+                                                <option value="" disabled>Select LGA</option>
+                                                {Object.keys(anambraLGAs).map((lga) => (
+                                                    <option key={lga} value={lga}>
+                                                        {lga}
+                                                    </option>
                                                 ))}
                                             </select>
-                                            <div className="invalid-feedback">{errors.country_of_residence}</div>
+                                            <div className="invalid-feedback">{errors.lga_of_origin}</div>
                                         </div>
-
+                                        <div className="col-md-6">
+                                            <label htmlFor="community_of_origin" className="form-label">community of Origin</label>
+                                            <select
+                                                className={`form-select ${errors.community_of_origin ? 'is-invalid' : ''}`}
+                                                id="community_of_origin"
+                                                name="community_of_origin"
+                                                value={formData.community_of_origin}
+                                                onChange={handleChange}
+                                            >
+                                                <option value="" disabled>Select Community</option>
+                                                {communities.map((community) => (
+                                                    <option key={community} value={community}>
+                                                        {community}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <div className="invalid-feedback">{errors.community_of_origin}</div>
+                                        </div>
                                     </div>
-
-                                    {formData.country_of_residence === 'Nigeria' && (
-                                        <>
-                                            <div className="row g-3 mt-3">
-                                                <div className="col-md-6">
-                                                    <label htmlFor="state_of_residence" className="form-label">State of Residence</label>
-                                                    <select
-                                                        className={`form-select ${errors.state_of_residence ? 'is-invalid' : ''}`}
-                                                        id="state_of_residence"
-                                                        name="state_of_residence"
-                                                        value={formData.state_of_residence}
-                                                        onChange={handleChange}
-                                                    >
-                                                        <option value="" disabled>Select State</option>
-                                                        {states.map((state, index) => (
-                                                            <option key={index} value={state}>{state}</option>
-                                                        ))}
-                                                    </select>
-                                                    <div className="invalid-feedback">{errors.state_of_residence}</div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <label htmlFor="lga_of_residence" className="form-label">LGA of Residence</label>
-                                                    <select
-                                                        className={`form-select ${errors.lga_of_residence ? 'is-invalid' : ''}`}
-                                                        id="lga_of_residence"
-                                                        name="lga_of_residence"
-                                                        value={formData.lga_of_residence}
-                                                        onChange={handleChange}
-                                                    >
-                                                        <option value="" disabled>Select LGA</option>
-                                                        {lgas.map((lga, index) => (
-                                                            <option key={index} value={lga}>{lga}</option>
-                                                        ))}
-                                                    </select>
-                                                    <div className="invalid-feedback">{errors.lga_of_residence}</div>
-                                                </div>
-                                            </div>
-                                            <div className="row g-3 mt-3">
-                                                <div className="col-md-6">
-                                                    <label htmlFor="lga_of_origin" className="form-label">LGA of Origin</label>
-                                                    <select
-                                                        className={`form-select ${errors.lga_of_origin ? 'is-invalid' : ''}`}
-                                                        id="lga_of_origin"
-                                                        name="lga_of_origin"
-                                                        value={formData.lga_of_origin}
-                                                        onChange={handleChange}
-                                                    >
-                                                        <option value="" disabled>Select LGA</option>
-                                                        {lgas.map((lga, index) => (
-                                                            <option key={index} value={lga}>{lga}</option>
-                                                        ))}
-                                                    </select>
-                                                    <div className="invalid-feedback">{errors.lga_of_origin}</div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <label htmlFor="community_of_origin" className="form-label">Community of Origin</label>
-                                                    <input
-                                                        type="text"
-                                                        className={`form-control ${errors.community_of_origin ? 'is-invalid' : ''}`}
-                                                        id="community_of_origin"
-                                                        name="community_of_origin"
-                                                        value={formData.community_of_origin}
-                                                        onChange={handleChange}
-                                                    />
-                                                    <div className="invalid-feedback">{errors.community_of_origin}</div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
 
                                     <div className="row g-3 mt-3">
                                         <div className="col-md-6">
@@ -536,6 +527,22 @@ const IndigenesForm = () => {
                                             <div className="invalid-feedback">{errors.phone_number}</div>
                                         </div>
                                         <div className="col-md-6">
+                                            <label htmlFor="phone_on_whatsapp" className="form-label">Is this phone number on Whatsapp?</label>
+                                            <select
+                                                className={`form-select ${errors.phone_on_whatsapp ? 'is-invalid' : ''}`}
+                                                id="phone_on_whatsapp"
+                                                name="phone_on_whatsapp"
+                                                value={formData.phone_on_whatsapp}
+                                                onChange={handleChange}
+                                            >
+                                                <option value="" disabled>Select Gender</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <div className="invalid-feedback">{errors.phone_on_whatsapp}</div>
+                                        </div>
+
+                                        <div className="col-md-6">
                                             <label htmlFor="alternate_phone_number" className="form-label">Alternate Phone Number</label>
                                             <input
                                                 type="tel"
@@ -546,6 +553,22 @@ const IndigenesForm = () => {
                                                 onChange={handleChange}
                                             />
                                             <div className="invalid-feedback">{errors.alternate_phone_number}</div>
+                                        </div>
+
+                                        <div className="col-md-6">
+                                            <label htmlFor="alternate_on_whatsapp" className="form-label">Is this alternate number on Whatsapp?</label>
+                                            <select
+                                                className={`form-select ${errors.alternate_on_whatsapp ? 'is-invalid' : ''}`}
+                                                id="alternate_on_whatsapp"
+                                                name="alternate_on_whatsapp"
+                                                value={formData.alternate_on_whatsapp}
+                                                onChange={handleChange}
+                                            >
+                                                <option value="" disabled>Select Option</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <div className="invalid-feedback">{errors.alternate_on_whatsapp}</div>
                                         </div>
                                     </div>
 
@@ -603,6 +626,85 @@ const IndigenesForm = () => {
                                                 onChange={handleChange}
                                             />
                                             <div className="invalid-feedback">{errors.valid_identification_number}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="row g-3 mt-3">
+                                        <div className="col-md-12">
+                                            <label htmlFor="country_of_residence" className="form-label">Country of Residence</label>
+                                            <select
+                                                className={`form-select ${errors.country_of_residence ? 'is-invalid' : ''}`}
+                                                id="country_of_residence"
+                                                name="country_of_residence"
+                                                value={formData.country_of_residence}
+                                                onChange={handleChange}
+                                            >
+                                                <option value="" disabled>Select Country</option>
+                                                {countries.map((country, index) => (
+                                                    <option key={index} value={country}>{country}</option>
+                                                ))}
+                                            </select>
+                                            <div className="invalid-feedback">{errors.country_of_residence}</div>
+                                        </div>
+
+                                    </div>
+
+                                    {formData.country_of_residence === 'Nigeria' && (
+                                        <>
+                                            <div className="row g-3 mt-3">
+                                                <div className="col-md-6">
+                                                    <label htmlFor="state_of_residence" className="form-label">State of Residence</label>
+                                                    <select
+                                                        className={`form-select ${errors.state_of_residence ? 'is-invalid' : ''}`}
+                                                        id="state_of_residence"
+                                                        name="state_of_residence"
+                                                        value={formData.state_of_residence}
+                                                        onChange={handleChange}
+                                                    >
+                                                        <option value="" disabled>Select State</option>
+                                                        {states.map((state, index) => (
+                                                            <option key={index} value={state}>{state}</option>
+                                                        ))}
+                                                    </select>
+                                                    <div className="invalid-feedback">{errors.state_of_residence}</div>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <label htmlFor="lga_of_residence" className="form-label">LGA of Residence</label>
+                                                    <select
+                                                        className={`form-select ${errors.lga_of_residence ? 'is-invalid' : ''}`}
+                                                        id="lga_of_residence"
+                                                        name="lga_of_residence"
+                                                        value={formData.lga_of_residence}
+                                                        onChange={handleChange}
+                                                    >
+                                                        <option value="" disabled>Select LGA</option>
+                                                        {lgas.map((lga, index) => (
+                                                            <option key={index} value={lga}>{lga}</option>
+                                                        ))}
+                                                    </select>
+                                                    <div className="invalid-feedback">{errors.lga_of_residence}</div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    <div className="row g-3 mt-3">
+                                        <div className="col-12">
+                                            <div className="form-check">
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-check-input"
+                                                    id="agreePrivacyPolicy"
+                                                    name="agreePrivacyPolicy"
+                                                    checked={formData.agreePrivacyPolicy}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                                <label className="form-check-label" htmlFor="agreePrivacyPolicy">
+                                                    By submitting this form, you agree to our privacy policy
+                                                </label>
+                                                {errors.agreePrivacyPolicy && <div className="invalid-feedback d-block">{errors.agreePrivacyPolicy}</div>}
+                                            </div>
                                         </div>
                                     </div>
 
