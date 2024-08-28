@@ -36,6 +36,7 @@ const IndigenesForm = () => {
         valid_means_of_identification: '',
         valid_identification_number: '',
         agreePrivacyPolicy: false,
+        ibad_id: '',
     };
 
     const [formData, setFormData] = useState(initialFormState);
@@ -45,6 +46,7 @@ const IndigenesForm = () => {
     const [lgas, setLGAs] = useState([]);
     const [showPopup, setShowPopup] = useState(false); // State for showing the popup
     const navigate = useNavigate(); // Hook for navigation
+    const [ibadId, setIbadId] = useState('');
 
     useEffect(() => {
         const fetchCountries = async () => {
@@ -61,17 +63,188 @@ const IndigenesForm = () => {
 
     const nigeriaStates = [
         'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
-        'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Federal Capital Territory (FCT)',
+        'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'Abuja',
         'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos',
         'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba',
         'Yobe', 'Zamfara'
     ];
 
     const lgasByState = {
-        Abia: ['Aba North', 'Aba South', 'Arochukwu', 'Bende', 'Ikwuano', 'Isiala Ngwa North',
+        Abia: [
+            'Aba North', 'Aba South', 'Arochukwu', 'Bende', 'Ikwuano', 'Isiala Ngwa North',
             'Isiala Ngwa South', 'Isiukwuato', 'Obi Ngwa', 'Ohafia', 'Osisioma', 'Ugwunagbo',
-            'Ukwa East', 'Ukwa West', 'Umu Nneochi', 'Umuahia North', 'Umuahia South'],
-        // Add other states and their LGAs here...
+            'Ukwa East', 'Ukwa West', 'Umu Nneochi', 'Umuahia North', 'Umuahia South'
+        ],
+        Adamawa: [
+            'Demsa', 'Fufore', 'Ganye', 'Girei', 'Gombi', 'Guyuk', 'Hong', 'Jada', 'Lamurde',
+            'Madagali', 'Maiha', 'Mayo Belwa', 'Michika', 'Mubi North', 'Mubi South', 'Numan',
+            'Shelleng', 'Song', 'Toungo', 'Yola North', 'Yola South'
+        ],
+        AkwaIbom: [
+            'Abak', 'Eastern Obolo', 'Eket', 'Esit Eket', 'Essien Udim', 'Etim Ekpo', 'Etinan',
+            'Ibeno', 'Ibesikpo Asutan', 'Ibiono Ibom', 'Ika', 'Ikono', 'Ikot Abasi', 'Ikot Ekpene',
+            'Ini', 'Itu', 'Mbo', 'Mkpat Enin', 'Nsit Atai', 'Nsit Ibom', 'Nsit Ubium', 'Obot Akara',
+            'Okobo', 'Onna', 'Oron', 'Oruk Anam', 'Udung Uko', 'Ukanafun', 'Uruan', 'Urue Offong/Oruko', 'Uyo'
+        ],
+        Anambra: [
+            'Aguata', 'Anambra East', 'Anambra West', 'Anaocha', 'Awka North', 'Awka South', 'Ayamelum',
+            'Dunukofia', 'Ekwusigo', 'Idemili North', 'Idemili South', 'Ihiala', 'Njikoka', 'Nnewi North',
+            'Nnewi South', 'Ogbaru', 'Onitsha North', 'Onitsha South', 'Orumba North', 'Orumba South', 'Oyi'
+        ],
+        Bauchi: [
+            'Alkaleri', 'Bauchi', 'Bogoro', 'Darazo', 'Dass', 'Gamawa', 'Ganjuwa', 'Giade', 'Itas Gadau',
+            'Jama\'are', 'Katagum', 'Kirfi', 'Misau', 'Ningi', 'Shira', 'Tafawa Balewa', 'Toro', 'Warji', 'Zaki'
+        ],
+        Bayelsa: [
+            'Brass', 'Ekeremor', 'Kolokuma/Opokuma', 'Nembe', 'Ogbia', 'Sagbama', 'Southern Ijaw', 'Yenagoa'
+        ],
+        Benue: [
+            'Ado', 'Agatu', 'Apa', 'Buruku', 'Gboko', 'Guma', 'Gwer East', 'Gwer West', 'Katsina-Ala',
+            'Konshisha', 'Kwande', 'Logo', 'Makurdi', 'Obi', 'Ogbadibo', 'Ohimini', 'Oju', 'Okpokwu',
+            'Otukpo', 'Tarka', 'Ukum', 'Ushongo', 'Vandeikya'
+        ],
+        Borno: [
+            'Abadam', 'Askira/Uba', 'Bama', 'Bayo', 'Biu', 'Chibok', 'Damboa', 'Dikwa', 'Gubio', 'Guzamala',
+            'Gwoza', 'Hawul', 'Jere', 'Kaga', 'Kala/Balge', 'Konduga', 'Kukawa', 'Kwaya Kusar', 'Mafa',
+            'Magumeri', 'Maiduguri', 'Marte', 'Mobbar', 'Monguno', 'Ngala', 'Nganzai', 'Shani'
+        ],
+        CrossRiver: [
+            'Abi', 'Akamkpa', 'Akpabuyo', 'Bakassi', 'Bekwarra', 'Biase', 'Boki', 'Calabar Municipal',
+            'Calabar South', 'Etung', 'Ikom', 'Obanliku', 'Obubra', 'Obudu', 'Odukpani', 'Ogoja', 'Yakurr', 'Yala'
+        ],
+        Delta: [
+            'Aniocha North', 'Aniocha South', 'Bomadi', 'Burutu', 'Ethiope East', 'Ethiope West', 'Ika North East',
+            'Ika South', 'Isoko North', 'Isoko South', 'Ndokwa East', 'Ndokwa West', 'Okpe', 'Oshimili North',
+            'Oshimili South', 'Patani', 'Sapele', 'Udu', 'Ughelli North', 'Ughelli South', 'Ukwuani', 'Uvwie',
+            'Warri North', 'Warri South', 'Warri South West'
+        ],
+        Ebonyi: [
+            'Abakaliki', 'Afikpo North', 'Afikpo South', 'Ebonyi', 'Ezza North', 'Ezza South', 'Ikwo',
+            'Ishielu', 'Ivo', 'Izzi', 'Ohaozara', 'Ohaukwu', 'Onicha'
+        ],
+        Edo: [
+            'Akoko Edo', 'Egor', 'Esan Central', 'Esan North-East', 'Esan South-East', 'Esan West', 'Etsako Central',
+            'Etsako East', 'Etsako West', 'Igueben', 'Ikpoba-Okha', 'Oredo', 'Orhionmwon', 'Ovia North-East',
+            'Ovia South-West', 'Owan East', 'Owan West', 'Uhunmwonde'
+        ],
+        Ekiti: [
+            'Ado Ekiti', 'Efon', 'Ekiti East', 'Ekiti South-West', 'Ekiti West', 'Emure', 'Gbonyin', 'Ido Osi',
+            'Ijero', 'Ikere', 'Ikole', 'Ilejemeje', 'Irepodun/Ifelodun', 'Ise/Orun', 'Moba', 'Oye'
+        ],
+        Enugu: [
+            'Aninri', 'Awgu', 'Enugu East', 'Enugu North', 'Enugu South', 'Ezeagu', 'Igbo Etiti', 'Igbo Eze North',
+            'Igbo Eze South', 'Isi Uzo', 'Nkanu East', 'Nkanu West', 'Nsukka', 'Oji River', 'Udenu', 'Udi', 'Uzo Uwani'
+        ],
+        Abuja: [
+            'Abaji', 'Bwari', 'Gwagwalada', 'Kuje', 'Kwali', 'Municipal (AMAC)'
+        ],
+        Gombe: [
+            'Akko', 'Balanga', 'Billiri', 'Dukku', 'Funakaye', 'Gombe', 'Kaltungo', 'Kwami', 'Nafada', 'Shongom', 'Yamaltu/Deba'
+        ],
+        Imo: [
+            'Aboh Mbaise', 'Ahiazu Mbaise', 'Ehime Mbano', 'Ezinihitte Mbaise', 'Ideato North', 'Ideato South',
+            'Ihitte/Uboma', 'Ikeduru', 'Isiala Mbano', 'Isu', 'Mbaitoli', 'Ngor Okpala', 'Njaba', 'Nkwerre', 'Nwangele',
+            'Obowo', 'Oguta', 'Ohaji/Egbema', 'Okigwe', 'Onuimo', 'Orlu', 'Orsu', 'Oru East', 'Oru West', 'Owerri Municipal',
+            'Owerri North', 'Owerri West'
+        ],
+        Jigawa: [
+            'Auyo', 'Babura', 'Biriniwa', 'Birnin Kudu', 'Buji', 'Dutse', 'Gagarawa', 'Garki', 'Gumel', 'Guri',
+            'Gwaram', 'Gwiwa', 'Hadejia', 'Jahun', 'Kafin Hausa', 'Kaugama', 'Kazaure', 'Kiri Kasama', 'Maigatari',
+            'Malam Madori', 'Miga', 'Ringim', 'Roni', 'Sule Tankarkar', 'Taura', 'Yankwashi'
+        ],
+        Kaduna: [
+            'Birnin Gwari', 'Chikun', 'Giwa', 'Igabi', 'Ikara', 'Jaba', 'Jema\'a', 'Kachia', 'Kaduna North', 'Kaduna South',
+            'Kagarko', 'Kajuru', 'Kaura', 'Kauru', 'Kubau', 'Kudan', 'Lere', 'Makarfi', 'Sabon Gari', 'Sanga',
+            'Soba', 'Zangon Kataf', 'Zaria'
+        ],
+        Kano: [
+            'Ajingi', 'Albasu', 'Bagwai', 'Bebeji', 'Bichi', 'Bunkure', 'Dala', 'Dambatta', 'Dawakin Kudu', 'Dawakin Tofa',
+            'Doguwa', 'Fagge', 'Gabasawa', 'Garko', 'Garun Mallam', 'Gaya', 'Gezawa', 'Gwale', 'Gwarzo', 'Kabo', 'Kano Municipal',
+            'Karaye', 'Kibiya', 'Kiru', 'Kumbotso', 'Kunchi', 'Kura', 'Madobi', 'Makoda', 'Minjibir', 'Nasarawa', 'Rano',
+            'Rimin Gado', 'Rogo', 'Shanono', 'Sumaila', 'Takai', 'Tarauni', 'Tofa', 'Tsanyawa', 'Tudun Wada', 'Ungogo', 'Warawa',
+            'Wudil'
+        ],
+        Katsina: [
+            'Bakori', 'Batagarawa', 'Batsari', 'Baure', 'Bindawa', 'Charanchi', 'Dan Musa', 'Dandume', 'Danja', 'Daura',
+            'Dutsi', 'Dutsin Ma', 'Faskari', 'Funtua', 'Ingawa', 'Jibia', 'Kafur', 'Kaita', 'Kankara', 'Kankia',
+            'Katsina', 'Kurfi', 'Kusada', 'Mai\'Adua', 'Malumfashi', 'Mani', 'Mashi', 'Matazu', 'Musawa', 'Rimi', 'Sabuwa',
+            'Safana', 'Sandamu', 'Zango'
+        ],
+        Kebbi: [
+            'Aleiro', 'Arewa Dandi', 'Argungu', 'Augie', 'Bagudo', 'Birnin Kebbi', 'Bunza', 'Dandi', 'Fakai', 'Gwandu',
+            'Jega', 'Kalgo', 'Koko/Besse', 'Maiyama', 'Ngaski', 'Sakaba', 'Shanga', 'Suru', 'Wasagu/Danko', 'Yauri', 'Zuru'
+        ],
+        Kogi: [
+            'Adavi', 'Ajaokuta', 'Ankpa', 'Bassa', 'Dekina', 'Ibaji', 'Idah', 'Igalamela Odolu', 'Ijumu', 'Kabba/Bunu',
+            'Kogi', 'Lokoja', 'Mopa Muro', 'Ofu', 'Ogori/Magongo', 'Okehi', 'Okene', 'Olamaboro', 'Omala', 'Yagba East', 'Yagba West'
+        ],
+        Kwara: [
+            'Asa', 'Baruten', 'Edu', 'Ekiti', 'Ifelodun', 'Ilorin East', 'Ilorin South', 'Ilorin West', 'Irepodun',
+            'Isin', 'Kaiama', 'Moro', 'Offa', 'Oke Ero', 'Oyun', 'Pategi'
+        ],
+        Lagos: [
+            'Agege', 'Ajeromi-Ifelodun', 'Alimosho', 'Amuwo-Odofin', 'Apapa', 'Badagry', 'Epe', 'Eti-Osa', 'Ibeju-Lekki',
+            'Ifako-Ijaiye', 'Ikeja', 'Ikorodu', 'Kosofe', 'Lagos Island', 'Lagos Mainland', 'Mushin', 'Ojo', 'Oshodi-Isolo',
+            'Shomolu', 'Surulere'
+        ],
+        Nasarawa: [
+            'Akwanga', 'Awe', 'Doma', 'Karu', 'Keana', 'Keffi', 'Kokona', 'Lafia', 'Nasarawa', 'Nasarawa Egon',
+            'Obi', 'Toto', 'Wamba'
+        ],
+        Niger: [
+            'Agaie', 'Agwara', 'Bida', 'Borgu', 'Bosso', 'Chanchaga', 'Edati', 'Gbako', 'Gurara', 'Katcha', 'Kontagora',
+            'Lapai', 'Lavun', 'Magama', 'Mariga', 'Mashegu', 'Mokwa', 'Muya', 'Pailoro', 'Rafi', 'Rijau', 'Shiroro',
+            'Suleja', 'Tafa', 'Wushishi'
+        ],
+        Ogun: [
+            'Abeokuta North', 'Abeokuta South', 'Ado-Odo/Ota', 'Egbado North', 'Egbado South', 'Ewekoro', 'Ifo',
+            'Ijebu East', 'Ijebu North', 'Ijebu North East', 'Ijebu Ode', 'Ikenne', 'Imeko Afon', 'Ipokia', 'Obafemi Owode',
+            'Odeda', 'Odogbolu', 'Ogun Waterside', 'Remo North', 'Shagamu'
+        ],
+        Ondo: [
+            'Akoko North-East', 'Akoko North-West', 'Akoko South-East', 'Akoko South-West', 'Akure North', 'Akure South',
+            'Ese Odo', 'Idanre', 'Ifedore', 'Ilaje', 'Ile Oluji/Okeigbo', 'Irele', 'Odigbo', 'Okitipupa', 'Ondo East', 'Ondo West',
+            'Ose', 'Owo'
+        ],
+        Osun: [
+            'Aiyedaade', 'Aiyedire', 'Atakumosa East', 'Atakumosa West', 'Boluwaduro', 'Boripe', 'Ede North', 'Ede South',
+            'Egbedore', 'Ejigbo', 'Ife Central', 'Ife East', 'Ife North', 'Ife South', 'Ifedayo', 'Ifelodun', 'Ila', 'Ilesa East',
+            'Ilesa West', 'Irepodun', 'Irewole', 'Isokan', 'Iwo', 'Obokun', 'Odo Otin', 'Ola Oluwa', 'Olorunda', 'Oriade',
+            'Orolu', 'Osogbo'
+        ],
+        Oyo: [
+            'Afijio', 'Akinyele', 'Atiba', 'Atisbo', 'Egbeda', 'Ibadan North', 'Ibadan North-East', 'Ibadan North-West',
+            'Ibadan South-East', 'Ibadan South-West', 'Ibarapa Central', 'Ibarapa East', 'Ibarapa North', 'Ido', 'Irepo',
+            'Iseyin', 'Itesiwaju', 'Iwajowa', 'Kajola', 'Lagelu', 'Ogbomosho North', 'Ogbomosho South', 'Ogo Oluwa',
+            'Olorunsogo', 'Oluyole', 'Ona Ara', 'Orelope', 'Ori Ire', 'Oyo East', 'Oyo West', 'Saki East', 'Saki West',
+            'Surulere'
+        ],
+        Plateau: [
+            'Barkin Ladi', 'Bassa', 'Bokkos', 'Jos East', 'Jos North', 'Jos South', 'Kanam', 'Kanke', 'Langtang North',
+            'Langtang South', 'Mangu', 'Mikang', 'Pankshin', 'Qua\'an Pan', 'Riyom', 'Shendam', 'Wase'
+        ],
+        Rivers: [
+            'Abua/Odual', 'Ahoada East', 'Ahoada West', 'Akuku-Toru', 'Andoni', 'Asari-Toru', 'Bonny', 'Degema', 'Eleme',
+            'Emohua', 'Etche', 'Gokana', 'Ikwerre', 'Khana', 'Obio/Akpor', 'Ogba/Egbema/Ndoni', 'Ogu/Bolo', 'Okrika',
+            'Omuma', 'Opobo/Nkoro', 'Oyigbo', 'Port Harcourt', 'Tai'
+        ],
+        Sokoto: [
+            'Binji', 'Bodinga', 'Dange Shuni', 'Gada', 'Goronyo', 'Gudu', 'Gwadabawa', 'Illela', 'Isa', 'Kebbe', 'Kware',
+            'Rabah', 'Sabon Birni', 'Shagari', 'Silame', 'Sokoto North', 'Sokoto South', 'Tambuwal', 'Tangaza', 'Tureta',
+            'Wamako', 'Wurno', 'Yabo'
+        ],
+        Taraba: [
+            'Ardo Kola', 'Bali', 'Donga', 'Gashaka', 'Gassol', 'Ibi', 'Jalingo', 'Karim Lamido', 'Kurmi', 'Lau', 'Sardauna',
+            'Takum', 'Ussa', 'Wukari', 'Yorro', 'Zing'
+        ],
+        Yobe: [
+            'Bade', 'Bursari', 'Damaturu', 'Fika', 'Fune', 'Geidam', 'Gujba', 'Gulani', 'Jakusko', 'Karasuwa', 'Machina',
+            'Nangere', 'Nguru', 'Potiskum', 'Tarmuwa', 'Yunusari', 'Yusufari'
+        ],
+        Zamfara: [
+            'Anka', 'Bakura', 'Birnin Magaji/Kiyaw', 'Bukkuyum', 'Bungudu', 'Gummi', 'Gusau', 'Kaura Namoda', 'Maradun',
+            'Maru', 'Shinkafi', 'Talata Mafara', 'Tsafe', 'Zurmi'
+        ],
     };
 
     const [communities, setCommunities] = useState([]);
@@ -233,6 +406,7 @@ const IndigenesForm = () => {
     const resetForm = () => {
         setFormData(initialFormState);
         setErrors({});
+        setIbadId('');
     };
 
     const handleSubmit = async (e) => {
@@ -240,16 +414,17 @@ const IndigenesForm = () => {
         const isValid = validateForm();
         if (isValid) {
             try {
-                const response = await axios.post('http://localhost/user_data/submit_form.php', formData);
+                const response = await axios.post('http://localhost/api_endpoint_for_anambra_state_form/submit_form.php', formData);
                 console.log(response.data);
                 if (response.data.status === "success") {
+                    setIbadId(response.data.ibad_id);
                     setShowPopup(true); // Show the popup
                     resetForm();
 
                     setTimeout(() => {
                         setShowPopup(false); // Hide the popup after 5 seconds
                         navigate('/'); // Redirect to home page
-                    }, 5000);
+                    }, 10000);
                 } else {
                     alert("Failed to submit form: " + response.data.message);
                 }
@@ -264,24 +439,28 @@ const IndigenesForm = () => {
 
     return (
         <>
-            <div className="container-fluid bg-light py-5">
+            <div className="container-fluid bg-dark py-5">
                 {showPopup && (
                     <div className="popup">
                         <div className="popup-content">
                             <p>Your submission has been received.</p>
+                            {ibadId && (
+                                <p>Your IBAD ID is: <strong>{ibadId}</strong></p>
+                            )}
+                            <p>You will receive your IBAD ID soon</p>
                         </div>
                     </div>
                 )}
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
                         <div className="card shadow-lg border-0">
-                            <div className="card-body p-5">
-                                <div className="text-center mb-5">
+                            <div className="card-body p-5" id='formbak'>
+                                <div className="text-center mb-5" id='texts'>
                                     {/* <img src={logo} alt="Logo" className="img-fluid mb-4" style={{maxHeight: '100px'}} /> */}
-                                    <h1 className="h3 mb-3 fw-bold text-primary">Anambra State Declaration Form</h1>
-                                    <p className="text-muted">(For Indigenes Only)</p>
+                                    <h1 className="h3 mb-3 fw-bold">I Believe in Anambra State Declaration Form</h1>
+                                    <p className="text">(For Indigenes Only)</p>
                                 </div>
-                                <form onSubmit={handleSubmit} method='POST' className="needs-validation" noValidate>
+                                <form onSubmit={handleSubmit} method='POST' className="needs-validation text-white" noValidate>
                                     <div className="row g-3">
                                         <div className="col-md-4">
                                             <label htmlFor="surname" className="form-label">Surname</label>
@@ -535,7 +714,7 @@ const IndigenesForm = () => {
                                                 value={formData.phone_on_whatsapp}
                                                 onChange={handleChange}
                                             >
-                                                <option value="" disabled>Select Gender</option>
+                                                <option value="" disabled>Select option</option>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
                                             </select>
@@ -610,15 +789,16 @@ const IndigenesForm = () => {
                                                 onChange={handleChange}
                                             >
                                                 <option value="" disabled>Select option</option>
-                                                <option value="drivers_liscence">Drivers Licsence</option>
-                                                <option value="NIN">National Identity Number</option>
+                                                <option value="Driver License">Drivers Licence</option>
+                                                <option value="National ID">National Identification Number</option>
+                                                <option value="Voter Card">Voters Card</option>
                                             </select>
                                             <div className="invalid-feedback">{errors.valid_means_of_identification}</div>
                                         </div>
                                         <div className="col-md-6">
                                             <label htmlFor="valid_identification_number" className="form-label">Valid Identification Number</label>
                                             <input
-                                                type="number"
+                                                type="text"
                                                 className={`form-control ${errors.valid_identification_number ? 'is-invalid' : ''}`}
                                                 id="valid_identification_number"
                                                 name="valid_identification_number"

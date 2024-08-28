@@ -8,14 +8,16 @@
 }
 
 .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: #e5ff00;
+    border-color: #9b9807;
     transition: all 0.3s ease;
+    color: black;
 }
 
+
 .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    background-color: #e5ff00;
+    border-color: #9b9807;
 }
 
 .form-label {
@@ -44,4 +46,17 @@
     padding: 20px;
     border-radius: 8px;
     text-align: center;
+}
+
+#formbak{
+    background-color: rgb(20, 20, 20);
+}
+#texts{
+    color: rgb(223, 201, 3);
+}
+#back{
+    background-color: #e5ff00;
+}
+#linktext{
+    color: white;
 }

@@ -27,19 +27,19 @@ function Home() {
 
     return (
         <>
-            <div className="bg-light min-vh-100 d-flex align-items-center">
+            <div className="bg-dark min-vh-100 d-flex align-items-center">
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
                         <div className="card shadow-lg border-0 rounded-lg mt-5">
-                            <div className="card-header bg-primary text-white text-center py-4">
+                            <div className="card-header text-white text-center py-4" id='back'>
                                 {/* <img src={logo} alt="Logo" className="mb-3" style={{maxWidth: '150px'}} /> */}
-                                <h2 className="font-weight-light">Anambra State Declaration Form</h2>
+                                <h2 className="font-weight-light text-dark">I Believe In Anambra State Declaration Form</h2>
                             </div>
-                            <div className="card-body">
+                            <div className="card-body" id='formbak'>
                                 {!showSecondQuestion ? (
                                     <>
-                                        <h3 className="text-center mb-4">Are you an indigene of Anambra state?</h3>
+                                        <h3 className="text-center text-white mb-4">Are you an indigene of Anambra state?</h3>
                                         <div className="d-flex justify-content-center">
                                             <button
                                                 className="btn btn-primary btn-lg mx-2"
@@ -48,7 +48,7 @@ function Home() {
                                                 Yes
                                             </button>
                                             <button
-                                                className="btn btn-outline-primary btn-lg mx-2"
+                                                className="btn btn-outline-light btn-lg mx-2"
                                                 onClick={() => handleUserChoice(false)}
                                             >
                                                 No
@@ -57,7 +57,7 @@ function Home() {
                                     </>
                                 ) : (
                                     <>
-                                        <h3 className="text-center mb-4">Do you reside in Anambra state?</h3>
+                                        <h3 className="text-center mb-4 text-white">Do you reside in Anambra state?</h3>
                                         <div className="d-flex justify-content-center">
                                             <button
                                                 className="btn btn-primary btn-lg mx-2"
@@ -66,7 +66,7 @@ function Home() {
                                                 Yes
                                             </button>
                                             <button
-                                                className="btn btn-outline-primary btn-lg mx-2"
+                                                className="btn btn-outline-light btn-lg mx-2"
                                                 onClick={() => handleSecondChoice(false)}
                                             >
                                                 No
@@ -81,9 +81,9 @@ function Home() {
                                     </div>
                                 )}
                             </div>
-                            <div className="card-footer text-center py-3">
-                                <div className="small">
-                                    <a href="#">Need help? Contact support</a>
+                            <div className="card-footer text-center py-3 bg-dark">
+                                <div className="small" >
+                                    <a href="#" id='linktext'>Need help? Contact support</a>
                                 </div>
                             </div>
                         </div>
