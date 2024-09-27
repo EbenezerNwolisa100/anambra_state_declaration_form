@@ -60,3 +60,10 @@
 #linktext{
     color: white;
 }
+#container{
+    padding-top: 88px;
+    height: 100vh;
+}
+.close{
+    text-decoration: none;
+}

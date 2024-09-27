@@ -11,6 +11,7 @@ const IndigenesForm = () => {
         first_name: '',
         middle_name: '',
         email: '',
+        passsword: '',
         date_of_birth: '',
         gender: '',
         marital_status: '',
@@ -272,13 +273,78 @@ const IndigenesForm = () => {
         "Oyi": ["Awkuzu", "Nkwelle-Ezunaka", "Nteje", "Ogbunike", "Umunya"]
     });
 
+    // const handleChange = (e) => {
+    //     const { name, value, type, checked } = e.target;
+    //     setFormData(prevData => ({
+    //         ...prevData,
+    //         [name]: type === 'checkbox' ? checked : value
+    //     }));
+
+    //     setErrors(prevErrors => ({
+    //         ...prevErrors,
+    //         [name]: ''
+    //     }));
+
+    //     if (name === 'country_of_residence') {
+    //         if (value === 'Nigeria') {
+    //             setStates(nigeriaStates);
+    //         } else {
+    //             setStates([]);
+    //             setLGAs([]);
+    //             setFormData(prevData => ({
+    //                 ...prevData,
+    //                 state_of_residence: '',
+    //                 lga_of_residence: '',
+    //             }));
+    //         }
+    //     }
+
+    //     if (name === 'state_of_residence') {
+    //         const stateLGAs = lgasByState[value] || [];
+    //         setLGAs(stateLGAs);
+    //         setFormData(prevData => ({
+    //             ...prevData,
+    //             lga_of_residence: '',
+    //             lga_of_origin: ''
+    //         }));
+    //     }
+
+    //     if (name === 'lga_of_origin') {
+    //         const communities = anambraLGAs[value] || [];
+    //         setCommunities(communities);
+    //         setFormData((prevData) => ({
+    //             ...prevData,
+    //             community_of_origin: ''
+    //         }));
+    //     }
+
+    //     if (name === 'marital_status' && value !== 'married') {
+    //         setFormData(prevData => ({
+    //             ...prevData,
+    //             spouse_name: '',
+    //             spouse_phone_number: ''
+    //         }));
+    //     }
+
+    //     if (name === 'employment_status' && value !== 'employed') {
+    //         setFormData(prevData => ({
+    //             ...prevData,
+    //             occupation: ''
+    //         }));
+    //     }
+    // };
+
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+
+        // Update form data based on input type (checkbox or others)
         setFormData(prevData => ({
             ...prevData,
             [name]: type === 'checkbox' ? checked : value
         }));
 
+        // Reset error for the field being changed
         setErrors(prevErrors => ({
             ...prevErrors,
             [name]: ''
@@ -288,6 +354,7 @@ const IndigenesForm = () => {
             if (value === 'Nigeria') {
                 setStates(nigeriaStates);
             } else {
+                // Clear states and LGAs if a country other than Nigeria is selected
                 setStates([]);
                 setLGAs([]);
                 setFormData(prevData => ({
@@ -301,24 +368,25 @@ const IndigenesForm = () => {
         if (name === 'state_of_residence') {
             const stateLGAs = lgasByState[value] || [];
             setLGAs(stateLGAs);
+            // Only reset lga_of_residence, not lga_of_origin
             setFormData(prevData => ({
                 ...prevData,
-                lga_of_residence: '',
-                lga_of_origin: ''
+                lga_of_residence: ''
             }));
         }
 
         if (name === 'lga_of_origin') {
-            // Update communities based on selected LGA of Origin
+            // Only update communities when lga_of_origin changes
             const communities = anambraLGAs[value] || [];
             setCommunities(communities);
-            setFormData((prevData) => ({
+            setFormData(prevData => ({
                 ...prevData,
                 community_of_origin: ''
             }));
         }
 
         if (name === 'marital_status' && value !== 'married') {
+            // Clear spouse details if not married
             setFormData(prevData => ({
                 ...prevData,
                 spouse_name: '',
@@ -327,12 +395,15 @@ const IndigenesForm = () => {
         }
 
         if (name === 'employment_status' && value !== 'employed') {
+            // Clear occupation if not employed
             setFormData(prevData => ({
                 ...prevData,
                 occupation: ''
             }));
         }
     };
+
+
 
     const validateForm = () => {
         let tempErrors = {};
@@ -359,6 +430,11 @@ const IndigenesForm = () => {
                 tempErrors[field] = `${field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())} is required`;
             }
         });
+
+        // Check if password meets criteria
+        if (!formData.password || formData.password.length < 8) {
+            tempErrors.password = "Password must be at least 8 characters long.";
+        }
 
         // Validate spouse fields if married
         if (formData.marital_status === 'married') {
@@ -409,24 +485,27 @@ const IndigenesForm = () => {
         setIbadId('');
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validateForm();
         if (isValid) {
             try {
-                const response = await axios.post('http://localhost/api_endpoint_for_anambra_state_form/submit_form.php', formData);
+                const response = await axios.post('https://ibad.asatuyouth.org/api/submit.php', formData);
                 console.log(response.data);
-                if (response.data.status === "success") {
+
+                // Check for success message
+                if (response.data.message === "Form submitted successfully") {
                     setIbadId(response.data.ibad_id);
-                    setShowPopup(true); // Show the popup
-                    resetForm();
+                    setShowPopup(true);
 
                     setTimeout(() => {
-                        setShowPopup(false); // Hide the popup after 5 seconds
+                        setShowPopup(false); // Hide the popup after 10 seconds
+                        resetForm();
                         navigate('/'); // Redirect to home page
-                    }, 10000);
+                    }, 30000);
                 } else {
-                    alert("Failed to submit form: " + response.data.message);
+                    alert("Failed to submit form: " + response.data.error);
                 }
             } catch (error) {
                 console.error("There was an error submitting the form!", error);
@@ -437,27 +516,29 @@ const IndigenesForm = () => {
         }
     };
 
+
     return (
         <>
             <div className="container-fluid bg-dark py-5">
-                {showPopup && (
+                {showPopup ? (
                     <div className="popup">
                         <div className="popup-content">
                             <p>Your submission has been received.</p>
-                            {ibadId && (
-                                <p>Your IBAD ID is: <strong>{ibadId}</strong></p>
+                            {ibadId ? (
+                                <p>Your Community Identification Number (CIN) is: <strong>{ibadId}</strong></p>
+                            ) : (
+                                <p>Something went wrong. Check your email for declaration confirmation or try again later.</p>
                             )}
-                            <p>You will receive your IBAD ID soon</p>
                         </div>
                     </div>
-                )}
+                ) : null}
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
                         <div className="card shadow-lg border-0">
                             <div className="card-body p-5" id='formbak'>
                                 <div className="text-center mb-5" id='texts'>
                                     {/* <img src={logo} alt="Logo" className="img-fluid mb-4" style={{maxHeight: '100px'}} /> */}
-                                    <h1 className="h3 mb-3 fw-bold">I Believe in Anambra State Declaration Form</h1>
+                                    <h1 className="h3 mb-3 fw-bold">I Believe in Anambra Declaration Form</h1>
                                     <p className="text">(For Indigenes Only)</p>
                                 </div>
                                 <form onSubmit={handleSubmit} method='POST' className="needs-validation text-white" noValidate>
@@ -527,6 +608,7 @@ const IndigenesForm = () => {
                                             <div className="invalid-feedback">{errors.date_of_birth}</div>
                                         </div>
                                     </div>
+
 
                                     <div className="row g-3 mt-3">
                                         <div className="col-md-6">
@@ -612,7 +694,7 @@ const IndigenesForm = () => {
                                             <div className="invalid-feedback">{errors.lga_of_origin}</div>
                                         </div>
                                         <div className="col-md-6">
-                                            <label htmlFor="community_of_origin" className="form-label">community of Origin</label>
+                                            <label htmlFor="community_of_origin" className="form-label">Community of Origin</label>
                                             <select
                                                 className={`form-select ${errors.community_of_origin ? 'is-invalid' : ''}`}
                                                 id="community_of_origin"
@@ -789,9 +871,9 @@ const IndigenesForm = () => {
                                                 onChange={handleChange}
                                             >
                                                 <option value="" disabled>Select option</option>
-                                                <option value="Driver License">Drivers Licence</option>
+                                                <option value="Drivers License">Drivers Licence</option>
                                                 <option value="National ID">National Identification Number</option>
-                                                <option value="Voter Card">Voters Card</option>
+                                                <option value="Voters Card">Voters Card</option>
                                             </select>
                                             <div className="invalid-feedback">{errors.valid_means_of_identification}</div>
                                         </div>

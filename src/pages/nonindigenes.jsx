@@ -12,6 +12,7 @@ function nonindigenes() {
         first_name: '',
         middle_name: '',
         email: '',
+        password: '',
         date_of_birth: '',
         gender: '',
         marital_status: '',
@@ -247,13 +248,19 @@ function nonindigenes() {
             'Maru', 'Shinkafi', 'Talata Mafara', 'Tsafe', 'Zurmi'
         ],
     };
-    
+
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: type === 'checkbox' ? checked : value
+        // const { name, value, type, checked } = e.target;
+        // setFormData(prevData => ({
+        //     ...prevData,
+        //     [name]: type === 'checkbox' ? checked : value
+        // }));
+
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value // Update only the field that was changed
         }));
 
         setErrors(prevErrors => ({
@@ -263,21 +270,15 @@ function nonindigenes() {
 
         if (name === 'state_of_origin' || name === 'state_of_residence') {
             const stateLGAs = lgasByState[value] || [];
-            if (name === 'state_of_origin') {
-                setFormData(prevData => ({
-                    ...prevData,
-                    lga_of_origin: ''
-                }));
-                setLGAs(stateLGAs);
-            } else {
-                setFormData(prevData => ({
-                    ...prevData,
-                    lga_of_residence: ''
-                }));
-                setLGAs(stateLGAs);
-            }
+            const updatedField = name === 'state_of_origin' ? 'lga_of_origin' : 'lga_of_residence';
+        
+            setFormData(prevData => ({
+                ...prevData,
+                [updatedField]: ''
+            }));
+            setLGAs(stateLGAs);
         }
-
+        
         if (name === 'country_of_residence') {
             if (value === 'Nigeria') {
                 setStates(nigeriaStates);
@@ -292,16 +293,7 @@ function nonindigenes() {
                 }));
             }
         }
-
-        if (name === 'state_of_residence') {
-            const stateLGAs = lgasByState[value] || [];
-            setLGAs(stateLGAs);
-            setFormData(prevData => ({
-                ...prevData,
-                lga_of_residence: '',
-                lga_of_origin: ''
-            }));
-        }
+        
 
         if (name === 'marital_status' && value !== 'married') {
             setFormData(prevData => ({
@@ -349,6 +341,11 @@ function nonindigenes() {
         if (formData.marital_status === 'married') {
             if (!formData.spouse_name) tempErrors.spouse_name = "Spouse name is required";
             if (!formData.spouse_phone_number) tempErrors.spouse_phone_number = "Spouse phone number is required";
+        }
+
+        // Check if password meets criteria
+        if (!formData.password || formData.password.length < 8) {
+            tempErrors.password = "Password must be at least 8 characters long.";
         }
 
         if (!formData.agreePrivacyPolicy) {
@@ -399,22 +396,24 @@ function nonindigenes() {
         const isValid = validateForm();
         if (isValid) {
             try {
-                const response = await axios.post('http://localhost/api_endpoint_for_anambra_state_form/submit_form.php', formData);
+                const response = await axios.post('https://ibad.asatuyouth.org/api/submit.php', formData);
                 console.log(response.data);
-                if (response.data.status === "success") {
+
+                // Check for success message
+                if (response.data.message === "Form submitted successfully") {
                     setIbadId(response.data.ibad_id);
-                    setShowPopup(true); // Show the popup
-                    resetForm();
-                    
+                    setShowPopup(true);
+
                     setTimeout(() => {
-                        setShowPopup(false); // Hide the popup after 5 seconds
+                        setShowPopup(false); // Hide the popup after 10 seconds
+                        resetForm();
                         navigate('/'); // Redirect to home page
-                    }, 10000);
+                    }, 30000);
                 } else {
-                    alert("Failed to submit form: " + response.data.message);
+                    alert("Failed to submit form: " + response.data.error);
                 }
             } catch (error) {
-                console.error("There was an error submitting the form!", error.response ? error.response.data : error.message);
+                console.error("There was an error submitting the form!", error);
                 alert("There was an error submitting the form!");
             }
         } else {
@@ -425,24 +424,25 @@ function nonindigenes() {
     return (
         <>
             <div className="container-fluid bg-dark py-5">
-            {showPopup && (
+                {showPopup ? (
                     <div className="popup">
                         <div className="popup-content">
                             <p>Your submission has been received.</p>
-                            {ibadId && (
-                                <p>Your IBAD ID is: <strong>{ibadId}</strong></p>
+                            {ibadId ? (
+                                <p>Your Community Identification Number (CIN) is: <strong>{ibadId}</strong></p>
+                            ) : (
+                                <p>Something went wrong. Check your email for declaration confirmation or try again later.</p>
                             )}
-                            <p>You will receive your IBAD ID soon</p>
                         </div>
                     </div>
-                )}
+                ) : null}
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
                         <div className="card shadow-lg border-0">
                             <div className="card-body p-5" id='formbak'>
                                 <div className="text-center mb-5" id='texts'>
                                     {/* <img src={logo} alt="Logo" className="img-fluid mb-4" style={{maxHeight: '100px'}} /> */}
-                                    <h1 className="h3 mb-3 fw-bold">I Believe in Anambra State Declaration Form</h1>
+                                    <h1 className="h3 mb-3 fw-bold">I Believe in Anambra Declaration Form</h1>
                                     <p className="text">(For Non-Indigenes Residing in Anambra Only)</p>
                                 </div>
                                 <form onSubmit={handleSubmit} method='POST' className="needs-validation text-white" noValidate>
@@ -512,6 +512,7 @@ function nonindigenes() {
                                             <div className="invalid-feedback">{errors.date_of_birth}</div>
                                         </div>
                                     </div>
+
 
                                     <div className="row g-3 mt-3">
                                         <div className="col-md-6">
@@ -588,7 +589,7 @@ function nonindigenes() {
                                                 {states.map(state => (
                                                     <option key={state} value={state}>{state}</option>
                                                 ))}
-                                            </select>
+                                            </select>   
                                             <div className="invalid-feedback">{errors.state_of_origin}</div>
                                         </div>
                                         <div className="col-md-6">

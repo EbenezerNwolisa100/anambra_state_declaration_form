@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from 'react'
 
 function Home() {
@@ -7,6 +7,7 @@ function Home() {
     const navigate = useNavigate();
     const [showSecondQuestion, setShowSecondQuestion] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showPopup, setShowPopup] = useState(false);
 
     const handleUserChoice = (isIndigene) => {
         if (isIndigene) {
@@ -15,6 +16,10 @@ function Home() {
             setShowSecondQuestion(true);
         }
     };
+
+    const togglePopup = () => {
+        setShowPopup(!showPopup);
+    }
 
     const handleSecondChoice = (residesInAnambra) => {
         if (residesInAnambra) {
@@ -34,7 +39,7 @@ function Home() {
                         <div className="card shadow-lg border-0 rounded-lg mt-5">
                             <div className="card-header text-white text-center py-4" id='back'>
                                 {/* <img src={logo} alt="Logo" className="mb-3" style={{maxWidth: '150px'}} /> */}
-                                <h2 className="font-weight-light text-dark">I Believe In Anambra State Declaration Form</h2>
+                                <h2 className="font-weight-light text-dark">I Believe In Anambra Declaration Form</h2>
                             </div>
                             <div className="card-body" id='formbak'>
                                 {!showSecondQuestion ? (
@@ -83,9 +88,19 @@ function Home() {
                             </div>
                             <div className="card-footer text-center py-3 bg-dark">
                                 <div className="small" >
-                                    <a href="#" id='linktext'>Need help? Contact support</a>
+                                    <Link id='linktext' onClick={togglePopup}>Contact Support</Link>
+                                    {/* <Link id='linktext' to={`/AdminLogin`}>Admin Area</Link> */}
                                 </div>
                             </div>
+                            {showPopup && (
+                                <div className="popup">
+                                    <div className="popup-content">
+                                        <h5>For all enquiries, please call</h5>
+                                        <h5>07066024724</h5>
+                                        <Link onClick={togglePopup} className='close'>Close</Link>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
